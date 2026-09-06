@@ -61,39 +61,56 @@ function App() {
           />
 
           <div className="relative mx-auto w-full max-w-6xl px-5 py-32 md:px-8 md:py-40">
-            <div className="reveal" data-reveal>
-              <p className="mono-label mb-6">Software Engineer / Computer Scientist</p>
+            <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+              {/* Left: text content */}
+              <div className="reveal" data-reveal>
+                <p className="mono-label mb-6">Software Engineer / Computer Scientist</p>
 
-              <h1 className="text-5xl font-bold leading-[1.08] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl">
-                Mickyas
-                <br />
-                Tesfaye
-              </h1>
+                <h1 className="text-5xl font-bold leading-[1.08] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl">
+                  Mickyas
+                  <br />
+                  Tesfaye
+                </h1>
 
-              <p className="mt-8 max-w-lg text-base leading-relaxed text-neutral-400 md:text-lg">
-                Backend-first developer building full-stack tools, games, and
-                systems. I focus on practical software delivery across Django,
-                Spring Boot, React, FastAPI, Flutter, and game development.
-              </p>
+                <p className="mt-8 max-w-lg text-base leading-relaxed text-neutral-400 md:text-lg">
+                  Backend-first developer building full-stack tools, games, and
+                  systems. I focus on practical software delivery across Django,
+                  Spring Boot, React, FastAPI, Flutter, and game development.
+                </p>
 
-              <div className="mt-10 flex flex-wrap gap-4">
-                <a
-                  href="#projects"
-                  className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-medium text-black transition-all duration-300 hover:bg-neutral-200"
-                >
-                  View work
-                  <ArrowUpRight
-                    size={16}
-                    className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                <div className="mt-10 flex flex-wrap gap-4">
+                  <a
+                    href="#projects"
+                    className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-medium text-black transition-all duration-300 hover:bg-neutral-200"
+                  >
+                    View work
+                    <ArrowUpRight
+                      size={16}
+                      className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                    />
+                  </a>
+                  <a
+                    href="mailto:alazartesfaye42@gmail.com"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/15 px-7 py-3 text-sm text-white transition-all duration-300 hover:border-white/40"
+                  >
+                    <Mail size={14} />
+                    Email me
+                  </a>
+                </div>
+              </div>
+
+              {/* Right: morphing gradient logo */}
+              <div className="reveal hidden lg:block" data-reveal>
+                <div className="hero-logo-container aspect-square w-full">
+                  <div className="hero-logo-blob" />
+                  <div className="hero-logo-blob-2" />
+                  <img
+                    src="/logo.png"
+                    alt=""
+                    className="hero-logo-img"
+                    aria-hidden="true"
                   />
-                </a>
-                <a
-                  href="mailto:alazartesfaye42@gmail.com"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 px-7 py-3 text-sm text-white transition-all duration-300 hover:border-white/40"
-                >
-                  <Mail size={14} />
-                  Email me
-                </a>
+                </div>
               </div>
             </div>
 
