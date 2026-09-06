@@ -48,12 +48,12 @@ export default function TelegramCommunity() {
   return (
     <section
       id="community"
-      className="relative mx-auto max-w-6xl px-5 py-24 md:px-8 md:py-32"
+      className="relative mx-auto w-full max-w-6xl px-5 py-24 md:px-8 md:py-32"
     >
-      {/* Ambient background glow */}
+      {/* Ambient background glow strictly centered without horizontal translation */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-12 left-1/2 -z-10 h-96 w-full -translate-x-1/2 max-w-4xl opacity-20 blur-3xl"
+        className="pointer-events-none absolute inset-x-0 -top-12 -z-10 mx-auto h-64 max-w-md opacity-20 blur-3xl"
         style={{
           background:
             'radial-gradient(ellipse at center, rgba(36, 161, 222, 0.35) 0%, rgba(36, 161, 222, 0.05) 50%, transparent 75%)',
@@ -61,9 +61,9 @@ export default function TelegramCommunity() {
       />
 
       {/* Header */}
-      <div className="reveal flex flex-col gap-4 md:flex-row md:items-end md:justify-between" data-reveal>
-        <div>
-          <div className="flex items-center gap-2 mb-4">
+      <div className="reveal flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between" data-reveal>
+        <div className="min-w-0 flex-1">
+          <div className="mb-4 flex flex-wrap items-center gap-2">
             <p className="mono-label">Community / Telegram</p>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[0.68rem] text-emerald-400">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -71,10 +71,10 @@ export default function TelegramCommunity() {
             </span>
           </div>
 
-          <h2 className="max-w-3xl text-3xl font-bold tracking-tight text-white md:text-4xl">
+          <h2 className="max-w-3xl text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-4xl">
             Join the Micky Codes Community.
           </h2>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-neutral-400">
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-neutral-400 sm:mt-4 sm:text-base">
             Devlogs, game releases, backend insights, and interactive updates.
             Below are the latest 3 dispatches fetched live from the channel.
           </p>
@@ -99,44 +99,44 @@ export default function TelegramCommunity() {
 
       {/* Channel Spotlight Banner Card */}
       <div
-        className="reveal mt-10 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-6 md:p-8"
+        className="reveal mt-8 sm:mt-10 w-full min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-5 sm:p-6 md:p-8"
         data-reveal
       >
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between min-w-0">
           {/* Avatar & Details */}
-          <div className="flex items-center gap-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 min-w-0 flex-1">
             <div className="relative flex-shrink-0">
               {feed.channel.image ? (
                 <img
                   src={feed.channel.image}
                   alt={feed.channel.title}
-                  className="h-16 w-16 rounded-2xl object-cover ring-2 ring-[#24A1DE]/30"
+                  className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl object-cover ring-2 ring-[#24A1DE]/30"
                 />
               ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#24A1DE]/20 text-white font-bold text-xl ring-2 ring-[#24A1DE]/30">
+                <div className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-[#24A1DE]/20 text-white font-bold text-lg sm:text-xl ring-2 ring-[#24A1DE]/30">
                   MC
                 </div>
               )}
-              <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#24A1DE] text-white shadow-lg">
-                <Send size={11} className="-translate-x-0.5 translate-y-0.5" />
+              <div className="absolute -bottom-1 -right-1 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-[#24A1DE] text-white shadow-lg">
+                <Send size={10} className="-translate-x-0.5 translate-y-0.5" />
               </div>
             </div>
 
-            <div>
-              <div className="flex flex-wrap items-center gap-2.5">
-                <h3 className="text-xl font-bold text-white">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-lg sm:text-xl font-bold text-white break-words">
                   {feed.channel.title}
                 </h3>
-                <span className="rounded-full border border-[#24A1DE]/30 bg-[#24A1DE]/10 px-2.5 py-0.5 font-mono text-[0.7rem] text-[#24A1DE]">
+                <span className="rounded-full border border-[#24A1DE]/30 bg-[#24A1DE]/10 px-2.5 py-0.5 font-mono text-[0.68rem] text-[#24A1DE]">
                   @{feed.channel.username}
                 </span>
               </div>
 
-              <p className="mt-1 whitespace-pre-line text-sm text-neutral-400">
+              <p className="mt-1.5 whitespace-pre-line text-xs sm:text-sm text-neutral-400 break-words leading-relaxed">
                 {feed.channel.description}
               </p>
 
-              <div className="mt-2.5 flex items-center gap-4 text-xs text-neutral-500">
+              <div className="mt-2.5 flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-neutral-500">
                 <span className="inline-flex items-center gap-1.5">
                   <Users size={12} className="text-neutral-400" />
                   {feed.channel.subscribers}
@@ -150,12 +150,12 @@ export default function TelegramCommunity() {
           </div>
 
           {/* Action buttons */}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 w-full lg:w-auto">
             <a
               href={feed.channel.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-2.5 rounded-full bg-[#24A1DE] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#24A1DE]/25 transition-all duration-300 hover:bg-[#1f8fc5] hover:shadow-[#24A1DE]/40"
+              className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-[#24A1DE] px-5 sm:px-6 py-2.5 sm:py-3 text-sm font-semibold text-white shadow-lg shadow-[#24A1DE]/25 transition-all duration-300 hover:bg-[#1f8fc5] hover:shadow-[#24A1DE]/40 text-center"
             >
               <Send size={14} className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               Join on Telegram
@@ -165,7 +165,7 @@ export default function TelegramCommunity() {
               href={`https://t.me/s/${feed.channel.username}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-5 py-3 text-sm text-neutral-300 transition-all duration-300 hover:border-white/35 hover:text-white"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-white/15 px-4 sm:px-5 py-2.5 sm:py-3 text-sm text-neutral-300 transition-all duration-300 hover:border-white/35 hover:text-white text-center"
             >
               <span>Channel Web View</span>
               <ExternalLink size={13} />
@@ -175,30 +175,29 @@ export default function TelegramCommunity() {
       </div>
 
       {/* Subtitle / Dispatches header */}
-      <div className="reveal mt-16 flex items-center justify-between" data-reveal>
+      <div className="reveal mt-12 sm:mt-16 flex flex-col sm:flex-row sm:items-center justify-between gap-2" data-reveal>
         <div className="flex items-center gap-2">
-          <Sparkles size={16} className="text-[#24A1DE]" />
-          <h3 className="text-lg font-semibold tracking-tight text-white">
+          <Sparkles size={16} className="text-[#24A1DE] flex-shrink-0" />
+          <h3 className="text-base sm:text-lg font-semibold tracking-tight text-white">
             Latest 3 Messages
           </h3>
-          <span className="text-xs text-neutral-500 font-mono">
-            (Always fetched embedded)
-          </span>
         </div>
 
-        <span className="font-mono text-xs text-neutral-500">
-          Showing #{latestThree[0] ?? ''} — #{latestThree[latestThree.length - 1] ?? ''}
-        </span>
+        <div className="flex items-center gap-2 font-mono text-xs text-neutral-500">
+          <span>Live Embedded Feed</span>
+          <span>•</span>
+          <span>#{latestThree[0] ?? ''} — #{latestThree[latestThree.length - 1] ?? ''}</span>
+        </div>
       </div>
 
       {/* Dynamic 3 Embedded Posts Grid */}
-      <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full min-w-0">
         {loading ? (
           // Skeleton loaders
           [1, 2, 3].map((n) => (
             <div
               key={n}
-              className="h-[420px] animate-pulse rounded-2xl border border-white/[0.06] bg-white/[0.02]"
+              className="h-[380px] sm:h-[420px] w-full min-w-0 animate-pulse rounded-2xl border border-white/[0.06] bg-white/[0.02]"
             />
           ))
         ) : (
@@ -206,7 +205,7 @@ export default function TelegramCommunity() {
             <div
               key={postId}
               data-reveal
-              className="reveal"
+              className="reveal w-full min-w-0"
               style={{ transitionDelay: `${index * 120}ms` }}
             >
               <TelegramEmbed
@@ -219,12 +218,12 @@ export default function TelegramCommunity() {
       </div>
 
       {/* Channel Footer Link */}
-      <div className="reveal mt-12 text-center" data-reveal>
+      <div className="reveal mt-10 sm:mt-12 text-center" data-reveal>
         <a
           href={feed.channel.link}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm text-neutral-400 transition-colors duration-300 hover:text-[#24A1DE]"
+          className="inline-flex items-center gap-2 text-xs sm:text-sm text-neutral-400 transition-colors duration-300 hover:text-[#24A1DE]"
         >
           <span>View all posts & devlogs on @{feed.channel.username}</span>
           <ExternalLink size={14} />

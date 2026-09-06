@@ -66,14 +66,14 @@ export default function TelegramEmbed({
   }, [loaded])
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] shadow-2xl transition-all duration-300 hover:border-white/20 hover:bg-white/[0.035]">
+    <div className="group relative flex flex-col w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] shadow-2xl transition-all duration-300 hover:border-white/20 hover:bg-white/[0.035]">
       {/* Header bar */}
-      <div className="flex items-center justify-between border-b border-white/[0.06] bg-white/[0.02] px-4 py-3 text-xs">
+      <div className="flex items-center justify-between border-b border-white/[0.06] bg-white/[0.02] px-3.5 py-2.5 sm:px-4 sm:py-3 text-xs">
         <div className="flex items-center gap-2 text-neutral-400">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#24A1DE]/15 text-[#24A1DE]">
-            <MessageSquare size={12} />
+          <span className="flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-[#24A1DE]/15 text-[#24A1DE]">
+            <MessageSquare size={11} />
           </span>
-          <span className="font-mono text-[0.7rem] text-neutral-300">
+          <span className="font-mono text-[0.68rem] sm:text-[0.7rem] text-neutral-300">
             Post #{postId}
           </span>
         </div>
@@ -90,7 +90,7 @@ export default function TelegramEmbed({
       </div>
 
       {/* Embed Container */}
-      <div className="relative w-full overflow-hidden bg-black/40">
+      <div className="relative w-full min-w-0 max-w-full overflow-hidden bg-black/40">
         {/* Skeleton while loading */}
         {!loaded && !loadError && (
           <div
@@ -105,7 +105,7 @@ export default function TelegramEmbed({
         )}
 
         {loadError ? (
-          <div className="flex flex-col items-center justify-center gap-3 p-8 text-center">
+          <div className="flex flex-col items-center justify-center gap-3 p-6 sm:p-8 text-center">
             <p className="text-sm text-neutral-400">
               Unable to load preview embed directly.
             </p>
@@ -124,8 +124,11 @@ export default function TelegramEmbed({
             ref={iframeRef}
             src={embedUrl}
             title={`Telegram Post ${postId}`}
-            className="w-full border-0 transition-opacity duration-500"
+            className="w-full max-w-full border-0 transition-opacity duration-500 block"
             style={{
+              width: '100%',
+              maxWidth: '100%',
+              minWidth: '0px',
               height: `${height}px`,
               opacity: loaded ? 1 : 0.01,
             }}
@@ -136,7 +139,6 @@ export default function TelegramEmbed({
               setLoaded(true)
             }}
             onLoad={() => {
-              // Give it 500ms to send message before setting loaded
               setTimeout(() => setLoaded(true), 600)
             }}
           />

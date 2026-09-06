@@ -56,19 +56,19 @@ function NavBar() {
         </a>
 
         {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-4 lg:gap-7 xl:gap-8">
           {navLinks.map((link) => (
             <a
               key={link.label}
               href={link.href}
-              className="text-[0.8rem] text-neutral-400 tracking-wide uppercase transition-colors duration-300 hover:text-white"
+              className="text-[0.72rem] lg:text-[0.8rem] text-neutral-400 tracking-wide uppercase transition-colors duration-300 hover:text-white whitespace-nowrap"
             >
               {link.label}
             </a>
           ))}
           <a
             href="mailto:alazartesfaye42@gmail.com"
-            className="ml-2 rounded-full border border-white/15 px-5 py-2 text-[0.8rem] text-white transition-all duration-300 hover:bg-white hover:text-black"
+            className="ml-1 lg:ml-2 rounded-full border border-white/15 px-4 lg:px-5 py-2 text-[0.72rem] lg:text-[0.8rem] text-white transition-all duration-300 hover:bg-white hover:text-black whitespace-nowrap"
           >
             Get in touch
           </a>
