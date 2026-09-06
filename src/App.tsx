@@ -6,6 +6,7 @@ import {
   Phone,
 } from 'lucide-react'
 import NavBar from './components/NavBar'
+import TelegramCommunity from './components/TelegramCommunity'
 import {
   projects,
   focusAreas,
@@ -19,7 +20,6 @@ import {
 
 function App() {
   useEffect(() => {
-    const items = document.querySelectorAll<HTMLElement>('[data-reveal]')
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -30,13 +30,31 @@ function App() {
         })
       },
       {
-        threshold: 0.12,
-        rootMargin: '0px 0px -6% 0px',
+        threshold: 0.08,
+        rootMargin: '0px 0px -4% 0px',
       },
     )
 
-    items.forEach((item) => observer.observe(item))
-    return () => observer.disconnect()
+    const observeItems = () => {
+      const items = document.querySelectorAll<HTMLElement>('[data-reveal]')
+      items.forEach((item) => {
+        if (!item.classList.contains('is-visible')) {
+          observer.observe(item)
+        }
+      })
+    }
+
+    observeItems()
+
+    const mutationObserver = new MutationObserver(() => {
+      observeItems()
+    })
+    mutationObserver.observe(document.body, { childList: true, subtree: true })
+
+    return () => {
+      observer.disconnect()
+      mutationObserver.disconnect()
+    }
   }, [])
 
   return (
@@ -411,6 +429,11 @@ function App() {
             ))}
           </div>
         </section>
+
+        <hr className="divider" />
+
+        {/* ─── TELEGRAM COMMUNITY ─── */}
+        <TelegramCommunity />
 
         <hr className="divider" />
 
