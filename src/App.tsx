@@ -283,13 +283,12 @@ function App() {
                       {project.title}
                     </h3>
                     <span
-                      className={`rounded-full px-3 py-0.5 text-[0.65rem] uppercase tracking-widest ${
-                        project.status === 'Live'
+                      className={`rounded-full px-3 py-0.5 text-[0.65rem] uppercase tracking-widest ${project.status === 'Live'
                           ? 'border border-white/20 text-white'
                           : project.status === 'Shipped'
                             ? 'border border-white/10 text-neutral-500'
                             : 'border border-white/10 text-neutral-500'
-                      }`}
+                        }`}
                     >
                       {project.status}
                     </span>
@@ -505,15 +504,6 @@ function App() {
           </div>
         </footer>
       </main>
-
-      {/* ─── MINI-ME MASCOT ─── */}
-      <mini-me
-        name="MickyCodes"
-        tagline="Welcome to my corner of the internet."
-        look="b:m;s:b27b58;e:dot.4a2c1d;bl:1;h:buzz.1c1a1f;j:none.ecd3d8;br:none;t:hoodie.25222c;p:slim.25222c;o:none.fbf8f3;f:sneakers.25222c;a:freckles,sunglasses,headphones.9c5a3c"
-        lines="Hehe, hi! | That tickles! | Thanks for stopping by! | Have a look around! | Psst, check out my projects."
-        intro="always"
-      />
     </div>
   )
 }
