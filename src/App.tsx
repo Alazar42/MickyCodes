@@ -99,6 +99,7 @@ function App() {
                 <div className="mt-10 flex flex-wrap gap-4">
                   <a
                     href="#projects"
+                    data-mm-say="Let me show you what I've built! 🚀"
                     className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-medium text-black transition-all duration-300 hover:bg-neutral-200"
                   >
                     View work
@@ -109,6 +110,7 @@ function App() {
                   </a>
                   <a
                     href="mailto:alazartesfaye42@gmail.com"
+                    data-mm-say="I'd love to hear from you! Drop me a line 📬"
                     className="inline-flex items-center gap-2 rounded-full border border-white/15 px-7 py-3 text-sm text-white transition-all duration-300 hover:border-white/40"
                   >
                     <Mail size={14} />
@@ -258,11 +260,21 @@ function App() {
                 ? { href: project.link, target: '_blank', rel: 'noopener noreferrer' }
                 : {}
 
+              const mmSayMap: Record<string, string> = {
+                'DrawViz': 'Ooh, my best project! A full 3D drawing studio 🎨',
+                'Polymorph IDE': 'This one\'s cooking — a visual HTML editor! 🛠️',
+                'Novel Maker': 'For game devs who love storytelling! 📖',
+                'Student Information System': 'Built for real students at a real college 🎓',
+                'Cultural Games': 'Games rooted in Ethiopian culture 🌍',
+                'ERP System': 'Enterprise-grade HR backend, Java-powered ☕',
+              }
+
               return (
                 <Wrapper
                   key={project.title}
                   {...wrapperProps}
                   data-reveal
+                  data-mm-say={mmSayMap[project.title] ?? `Check out ${project.title}!`}
                   className="reveal group rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 transition-all duration-500 hover:border-white/[0.12] hover:bg-white/[0.04] md:p-8"
                   style={{ transitionDelay: `${i * 80}ms` }}
                 >
@@ -457,6 +469,7 @@ function App() {
             <div className="mt-10 flex flex-wrap gap-4">
               <a
                 href="mailto:alazartesfaye42@gmail.com"
+                data-mm-say="Let's collaborate! I'm always open to new opportunities ✉️"
                 className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-medium text-black transition-all duration-300 hover:bg-neutral-200"
               >
                 <Mail size={14} />
@@ -464,6 +477,7 @@ function App() {
               </a>
               <a
                 href="#home"
+                data-mm-say="Back to the top! Let's start over 😄"
                 className="inline-flex items-center gap-2 rounded-full border border-white/15 px-7 py-3 text-sm text-white transition-all duration-300 hover:border-white/40"
               >
                 Back to top
@@ -491,6 +505,15 @@ function App() {
           </div>
         </footer>
       </main>
+
+      {/* ─── MINI-ME MASCOT ─── */}
+      <mini-me
+        name="MickyCodes"
+        tagline="Welcome to my corner of the internet."
+        look="b:m;s:b27b58;e:dot.4a2c1d;bl:1;h:buzz.1c1a1f;j:none.ecd3d8;br:none;t:hoodie.25222c;p:slim.25222c;o:none.fbf8f3;f:sneakers.25222c;a:freckles,sunglasses,headphones.9c5a3c"
+        lines="Hehe, hi! | That tickles! | Thanks for stopping by! | Have a look around! | Psst, check out my projects."
+        intro="always"
+      />
     </div>
   )
 }
