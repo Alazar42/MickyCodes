@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Archive, Trash2, Eye } from 'lucide-react'
 import { adminApi, type Message } from '../lib/api'
 import { useCrud } from './useCrud'

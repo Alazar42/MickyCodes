@@ -18,7 +18,7 @@ export default function SettingsPage() {
   useEffect(() => {
     api.settings.list().then((data) => {
       if (Array.isArray(data) && data.length) setForm(data[0])
-      else if (data && typeof data === 'object') setForm(data as Setting)
+      else if (data && typeof data === 'object') setForm(data as unknown as Setting)
       setLoading(false)
     }).catch(() => setLoading(false))
   }, [])
