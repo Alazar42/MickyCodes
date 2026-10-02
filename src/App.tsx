@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import {
   ArrowUpRight,
   Mail,
@@ -7,18 +7,64 @@ import {
 } from 'lucide-react'
 import NavBar from './components/NavBar'
 import TelegramCommunity from './components/TelegramCommunity'
+import { api, type Project, type Experience as Exp, type Skill, type Achievement } from './lib/api'
 import {
-  projects,
   focusAreas,
-  experience,
-  skills,
   strengths,
-  awards,
   languages,
   metrics,
+  // fallbacks used when API returns no data
+  projects as staticProjects,
+  experience as staticExperience,
+  skills as staticSkills,
+  awards as staticAwards,
 } from './lib/data'
 
 function App() {
+  const [projects, setProjects] = useState<Project[]>([])
+  const [experience, setExperience] = useState<Exp[]>([])
+  const [skills, setSkills] = useState<Skill[]>([])
+  const [awards, setAwards] = useState<Achievement[]>([])
+
+  useEffect(() => {
+    // Fetch live data from backend, fall back to static data on error
+    api.projects.list().then((data) => { if (data.length) setProjects(data) }).catch(() => {})
+    api.experience.list().then((data) => { if (data.length) setExperience(data) }).catch(() => {})
+    api.skills.list().then((data) => { if (data.length) setSkills(data) }).catch(() => {})
+    api.achievements.list().then((data) => { if (data.length) setAwards(data) }).catch(() => {})
+
+    // Track page view
+    api.analytics.track('page_view', 'home').catch(() => {})
+  }, [])
+
+  // Use API data when available, fallback to static
+  const displayProjects = projects.length ? projects : staticProjects.map((p) => ({
+    id: p.title, name: p.title, slug: p.title.toLowerCase().replace(/\s+/g, '-'),
+    short_description: p.description, full_description: p.description,
+    status: p.status, category: '', featured: false, thumbnail: '', gallery: '',
+    repository_url: p.link ?? '', live_url: p.link ?? '', documentation_url: '',
+    download_url: '', technologies: p.tech.join(', '), tags: '', start_date: '',
+    release_date: '', created_date: '', updated_date: '', views: 0,
+  } as Project))
+
+  const displayExperience = experience.length ? experience : staticExperience.map((e) => ({
+    id: e.title, title: e.title, organization: e.place, description: e.detail,
+    start_date: e.period.split(' -- ')[0] ?? '', end_date: e.period.split(' -- ')[1] ?? '',
+    location: '', external_link: '', is_current: e.period.includes('Present'), display_order: 0,
+  } as Exp))
+
+  const displaySkills = skills.length ? skills : staticSkills.map((s, i) => ({
+    id: s, name: s, category: '', icon: '', description: '',
+    display_order: i, featured: false, proficiency: 80,
+  } as Skill))
+
+  const displayAwards = awards.length ? awards : staticAwards.map((a, i) => ({
+    id: a.title, title: a.title, description: a.detail, organization: '',
+    date: '', image: '', certificate: '', external_link: '', project_association: '',
+    display_order: i,
+  } as Achievement))
+
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -56,6 +102,8 @@ function App() {
       mutationObserver.disconnect()
     }
   }, [])
+
+
 
   return (
     <div className="noise-overlay min-h-screen bg-black text-white">
@@ -254,52 +302,44 @@ function App() {
           </div>
 
           <div className="mt-12 grid gap-4 md:grid-cols-2">
-            {projects.map((project, i) => {
-              const Wrapper = project.link ? 'a' : 'div'
-              const wrapperProps = project.link
-                ? { href: project.link, target: '_blank', rel: 'noopener noreferrer' }
+            {displayProjects.map((project, i) => {
+              const liveUrl = project.live_url || project.repository_url
+              const Wrapper = liveUrl ? 'a' : 'div'
+              const wrapperProps = liveUrl
+                ? { href: liveUrl, target: '_blank', rel: 'noopener noreferrer' }
                 : {}
-
-              const mmSayMap: Record<string, string> = {
-                'DrawViz': 'Ooh, my best project! A full 3D drawing studio 🎨',
-                'Polymorph IDE': 'This one\'s cooking — a visual HTML editor! 🛠️',
-                'Novel Maker': 'For game devs who love storytelling! 📖',
-                'Student Information System': 'Built for real students at a real college 🎓',
-                'Cultural Games': 'Games rooted in Ethiopian culture 🌍',
-                'ERP System': 'Enterprise-grade HR backend, Java-powered ☕',
-              }
+              const techs = project.technologies ? project.technologies.split(',').map((t) => t.trim()).filter(Boolean) : []
 
               return (
                 <Wrapper
-                  key={project.title}
+                  key={project.id ?? project.slug}
                   {...wrapperProps}
                   data-reveal
-                  data-mm-say={mmSayMap[project.title] ?? `Check out ${project.title}!`}
+                  data-mm-say={`Check out ${project.name}!`}
                   className="reveal group rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 transition-all duration-500 hover:border-white/[0.12] hover:bg-white/[0.04] md:p-8"
                   style={{ transitionDelay: `${i * 80}ms` }}
                 >
                   <div className="flex items-start justify-between">
                     <h3 className="text-lg font-semibold text-white">
-                      {project.title}
+                      {project.name}
                     </h3>
                     <span
-                      className={`rounded-full px-3 py-0.5 text-[0.65rem] uppercase tracking-widest ${project.status === 'Live'
+                      className={`rounded-full px-3 py-0.5 text-[0.65rem] uppercase tracking-widest ${
+                        project.status?.toLowerCase() === 'published' || project.status?.toLowerCase() === 'live'
                           ? 'border border-white/20 text-white'
-                          : project.status === 'Shipped'
-                            ? 'border border-white/10 text-neutral-500'
-                            : 'border border-white/10 text-neutral-500'
-                        }`}
+                          : 'border border-white/10 text-neutral-500'
+                      }`}
                     >
                       {project.status}
                     </span>
                   </div>
 
                   <p className="mt-3 text-sm leading-relaxed text-neutral-400">
-                    {project.description}
+                    {project.short_description}
                   </p>
 
                   <div className="mt-5 flex flex-wrap gap-2">
-                    {project.tech.map((t) => (
+                    {techs.map((t) => (
                       <span
                         key={t}
                         className="rounded-md bg-white/[0.05] px-2.5 py-1 font-mono text-[0.7rem] text-neutral-400"
@@ -309,7 +349,7 @@ function App() {
                     ))}
                   </div>
 
-                  {project.link && (
+                  {liveUrl && (
                     <div className="mt-5 inline-flex items-center gap-1.5 text-sm text-neutral-500 transition-colors duration-300 group-hover:text-white">
                       View live
                       <ArrowUpRight size={14} className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -336,29 +376,34 @@ function App() {
           </div>
 
           <div className="mt-12 space-y-0">
-            {experience.map((item, i) => (
-              <div
-                key={item.title + item.place}
-                data-reveal
-                className="reveal group border-t border-white/[0.06] py-8 transition-colors duration-500 first:border-t-0 hover:bg-white/[0.015] md:grid md:grid-cols-[200px_1fr] md:gap-8 md:px-4"
-                style={{ transitionDelay: `${i * 60}ms` }}
-              >
-                <div className="mb-2 md:mb-0">
-                  <span className="text-sm text-neutral-500">{item.period}</span>
+            {displayExperience.map((item, i) => {
+              const period = item.is_current
+                ? `${item.start_date} — Present`
+                : `${item.start_date}${item.end_date ? ` — ${item.end_date}` : ''}`
+              return (
+                <div
+                  key={item.id ?? item.title + item.organization}
+                  data-reveal
+                  className="reveal group border-t border-white/[0.06] py-8 transition-colors duration-500 first:border-t-0 hover:bg-white/[0.015] md:grid md:grid-cols-[200px_1fr] md:gap-8 md:px-4"
+                  style={{ transitionDelay: `${i * 60}ms` }}
+                >
+                  <div className="mb-2 md:mb-0">
+                    <span className="text-sm text-neutral-500">{period}</span>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-white">
+                      {item.title}{' '}
+                      <span className="font-normal text-neutral-500">
+                        / {item.organization}
+                      </span>
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-neutral-400">
+                      {item.description}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-base font-semibold text-white">
-                    {item.title}{' '}
-                    <span className="font-normal text-neutral-500">
-                      / {item.place}
-                    </span>
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-neutral-400">
-                    {item.detail}
-                  </p>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </section>
 
@@ -381,13 +426,13 @@ function App() {
             <div className="reveal" data-reveal>
               <p className="mono-label mb-5">Stack</p>
               <div className="flex flex-wrap gap-2">
-                {skills.map((item, i) => (
+                {displaySkills.map((item, i) => (
                   <span
-                    key={item}
+                    key={item.id ?? item.name}
                     className="rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-sm text-neutral-300 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
                     style={{ transitionDelay: `${i * 20}ms` }}
                   >
-                    {item}
+                    {item.icon ? `${item.icon} ` : ''}{item.name}
                   </span>
                 ))}
               </div>
@@ -422,9 +467,9 @@ function App() {
           </div>
 
           <div className="mt-12 grid gap-4 md:grid-cols-3">
-            {awards.map((item, i) => (
+            {displayAwards.map((item, i) => (
               <div
-                key={item.title}
+                key={item.id ?? item.title}
                 data-reveal
                 className="reveal rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 transition-all duration-500 hover:border-white/[0.12] hover:bg-white/[0.04]"
                 style={{ transitionDelay: `${i * 100}ms` }}
@@ -433,8 +478,11 @@ function App() {
                 <h3 className="mt-4 text-base font-semibold text-white">
                   {item.title}
                 </h3>
+                {item.organization && (
+                  <p className="mt-1 text-xs text-neutral-500">{item.organization}</p>
+                )}
                 <p className="mt-2 text-sm leading-relaxed text-neutral-400">
-                  {item.detail}
+                  {item.description}
                 </p>
               </div>
             ))}
@@ -498,9 +546,14 @@ function App() {
                 MickyCodes -- Mickyas Tesfaye
               </span>
             </div>
-            <span className="text-xs text-neutral-600">
-              Addis Ababa, Ethiopia
-            </span>
+            <div className="flex items-center gap-6">
+              <span className="text-xs text-neutral-600">
+                Addis Ababa, Ethiopia
+              </span>
+              <a href="/admin" className="text-xs text-neutral-700 hover:text-neutral-500 transition-colors duration-300">
+                Admin
+              </a>
+            </div>
           </div>
         </footer>
       </main>
