@@ -51,6 +51,19 @@ html {
   min-height: 100vh;
 }
 
+/* Hide mini-me mascot on admin pages */
+.admin-layout mini-me,
+.admin-login-page mini-me,
+.admin-shell mini-me,
+body:has(.admin-layout) mini-me,
+body:has(.admin-login-page) mini-me,
+body:has(.admin-shell) mini-me {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 section {
   scroll-margin-top: 5rem;
 }

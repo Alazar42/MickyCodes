@@ -14,6 +14,31 @@ const isProd = process.env.NODE_ENV === 'production'
 const app = express()
 app.use(express.json({ limit: '10mb' }))
 
+// ─── CORS & Preflight Handling ────────────────────────────────────────────────
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const origin = req.headers.origin
+  if (origin) {
+    res.header('Access-Control-Allow-Origin', origin)
+    res.header('Access-Control-Allow-Credentials', 'true')
+  } else {
+    res.header('Access-Control-Allow-Origin', '*')
+  }
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD')
+  res.header(
+    'Access-Control-Allow-Headers',
+    req.headers['access-control-request-headers'] ||
+      'Origin, X-Requested-With, Content-Type, Accept, Authorization, Range'
+  )
+  res.header('Access-Control-Expose-Headers', 'Content-Length, Content-Range')
+  res.header('Access-Control-Max-Age', '86400')
+
+  // Respond with 204 No Content for CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end()
+  }
+  next()
+})
+
 // ─── Production Credentials ──────────────────────────────────────────────────
 const ADMIN_EMAIL = 'alazartesfaye42@gmail.com'
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '@Mickyastesfaye0965161472'
@@ -331,12 +356,16 @@ app.post('/api/v1/auth/logout', (req: Request, res: Response) => {
 
 app.get('/api/telegram', async (_req: Request, res: Response) => {
   try {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 4500)
+
     const response = await fetch('https://t.me/s/MickyCodes', {
+      signal: controller.signal,
       headers: {
         'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       },
-    })
+    }).finally(() => clearTimeout(timer))
 
     if (!response.ok) throw new Error(`Telegram status ${response.status}`)
     const html = await response.text()
@@ -466,6 +495,134 @@ registerResource('tags', 'tags')
 registerResource('social_links', 'social-links')
 registerResource('navigation', 'navigation/items')
 
+// Project single item lookup & releases
+app.get('/api/v1/projects/:idOrSlug', (req: Request, res: Response) => {
+  const param = req.params.idOrSlug
+  const project = db.projects.find((p) => p.slug === param || String(p.id) === param)
+  if (!project) return res.status(404).json({ error: 'Project not found' })
+  res.json(project)
+})
+app.get('/api/v1/projects/:slug/releases', (req: Request, res: Response) => {
+  const param = req.params.slug
+  const releases = (db.releases || []).filter((r) => r.project_slug === param || r.project_id === param)
+  res.json(releases)
+})
+app.post('/api/v1/admin/projects/:slug/releases', requireAuth, (req: Request, res: Response) => {
+  const newRel = {
+    id: `rel_${Date.now()}`,
+    project_slug: req.params.slug,
+    ...req.body,
+    release_date: req.body?.release_date || new Date().toISOString(),
+  }
+  db.releases.unshift(newRel)
+  saveDatabase(db)
+  res.status(201).json(newRel)
+})
+app.post('/api/v1/admin/projects/:id/publish', requireAuth, (req: Request, res: Response) => {
+  const item = db.projects.find((p) => String(p.id) === req.params.id || p.slug === req.params.id)
+  if (!item) return res.status(404).json({ error: 'Project not found' })
+  item.status = 'published'
+  item.updated_date = new Date().toISOString()
+  saveDatabase(db)
+  res.json(item)
+})
+app.post('/api/v1/admin/projects/:id/archive', requireAuth, (req: Request, res: Response) => {
+  const item = db.projects.find((p) => String(p.id) === req.params.id || p.slug === req.params.id)
+  if (!item) return res.status(404).json({ error: 'Project not found' })
+  item.status = 'archived'
+  item.updated_date = new Date().toISOString()
+  saveDatabase(db)
+  res.json(item)
+})
+
+// Post single item lookup & actions
+app.get('/api/v1/posts/:idOrSlug', (req: Request, res: Response) => {
+  const param = req.params.idOrSlug
+  const post = db.posts.find((p) => p.slug === param || String(p.id) === param)
+  if (!post) return res.status(404).json({ error: 'Post not found' })
+  res.json(post)
+})
+app.post('/api/v1/admin/posts/:id/publish', requireAuth, (req: Request, res: Response) => {
+  const item = db.posts.find((p) => String(p.id) === req.params.id || p.slug === req.params.id)
+  if (!item) return res.status(404).json({ error: 'Post not found' })
+  item.status = 'published'
+  item.updated_date = new Date().toISOString()
+  saveDatabase(db)
+  res.json(item)
+})
+app.post('/api/v1/admin/posts/:id/unpublish', requireAuth, (req: Request, res: Response) => {
+  const item = db.posts.find((p) => String(p.id) === req.params.id || p.slug === req.params.id)
+  if (!item) return res.status(404).json({ error: 'Post not found' })
+  item.status = 'draft'
+  item.updated_date = new Date().toISOString()
+  saveDatabase(db)
+  res.json(item)
+})
+
+// Release actions
+app.post('/api/v1/admin/releases/:id/publish', requireAuth, (req: Request, res: Response) => {
+  const item = db.releases.find((r) => String(r.id) === req.params.id)
+  if (!item) return res.status(404).json({ error: 'Release not found' })
+  item.status = 'released'
+  saveDatabase(db)
+  res.json(item)
+})
+
+// Media API
+app.get('/api/v1/media', (_req: Request, res: Response) => {
+  res.json(db.media || [])
+})
+app.post('/api/v1/admin/media', requireAuth, (req: Request, res: Response) => {
+  const newMedia = {
+    id: `med_${Date.now()}`,
+    ...req.body,
+    uploaded_date: new Date().toISOString(),
+  }
+  db.media.unshift(newMedia)
+  saveDatabase(db)
+  res.status(201).json(newMedia)
+})
+app.delete('/api/v1/admin/media/:id', requireAuth, (req: Request, res: Response) => {
+  const idx = db.media.findIndex((m) => String(m.id) === req.params.id)
+  if (idx !== -1) db.media.splice(idx, 1)
+  saveDatabase(db)
+  res.json({ ok: true })
+})
+
+// Analytics track
+app.post('/api/v1/analytics/track', (req: Request, res: Response) => {
+  const { event_type, target_slug } = req.body || {}
+  if (event_type === 'view_project' && target_slug) {
+    const proj = db.projects.find((p) => p.slug === target_slug || String(p.id) === target_slug)
+    if (proj) {
+      proj.views = (proj.views || 0) + 1
+      saveDatabase(db)
+    }
+  } else if (event_type === 'view_post' && target_slug) {
+    const post = db.posts.find((p) => p.slug === target_slug || String(p.id) === target_slug)
+    if (post) {
+      post.views = (post.views || 0) + 1
+      saveDatabase(db)
+    }
+  }
+  res.status(200).json({ ok: true, tracked: true })
+})
+
+// Analytics subroutes
+app.get('/api/v1/admin/analytics/posts', requireAuth, (_req: Request, res: Response) => {
+  res.json(db.posts.map((p) => ({ id: p.id, title: p.title, views: p.views || 0 })))
+})
+app.get('/api/v1/admin/analytics/projects', requireAuth, (_req: Request, res: Response) => {
+  res.json(db.projects.map((p) => ({ id: p.id, name: p.name, views: p.views || 0 })))
+})
+app.get('/api/v1/admin/analytics/views', requireAuth, (_req: Request, res: Response) => {
+  const total = db.projects.reduce((s, p) => s + (p.views || 0), 0) + db.posts.reduce((s, p) => s + (p.views || 0), 0)
+  res.json({ total })
+})
+app.get('/api/v1/admin/dashboard/activity', requireAuth, (_req: Request, res: Response) => {
+  res.json(db.activity)
+})
+
 // Public navigation route
 app.get('/api/v1/navigation', (_req: Request, res: Response) => {
   res.json(db.navigation)
@@ -558,6 +715,21 @@ app.post('/api/v1/admin/database/reset', requireAuth, (_req: Request, res: Respo
   res.json({ ok: true, message: 'Database reset successfully' })
 })
 
+// ─── API 404 & Global Error Fallbacks ────────────────────────────────────────
+app.use('/api', (req: Request, res: Response) => {
+  res.status(404).json({ error: 'Not Found', message: `API route ${req.method} ${req.originalUrl} not found` })
+})
+
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  console.error('[Server Error Handler]', err)
+  if (!res.headersSent) {
+    res.status(err.status || 500).json({
+      error: err.message || 'Internal Server Error',
+      status: err.status || 500
+    })
+  }
+})
+
 // ─── START SERVER & VITE INTEGRATION ─────────────────────────────────────────
 
 async function startServer() {
@@ -570,7 +742,7 @@ async function startServer() {
   } else {
     const distPath = path.resolve(__dirname, 'dist')
     app.use(express.static(distPath))
-    app.get('*', (_req: Request, res: Response) => {
+    app.use((_req: Request, res: Response) => {
       res.sendFile(path.resolve(distPath, 'index.html'))
     })
   }

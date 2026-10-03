@@ -316,6 +316,15 @@
   "media": [],
   "activity": [
     {
+      "id": "act_1790995689031_jhmsa",
+      "admin_user": "Admin",
+      "action": "LOGIN_SUCCESS",
+      "target_type": "Auth",
+      "target_id": "usr-micky-01",
+      "details": "Admin authenticated from 127.0.0.1",
+      "timestamp": "2026-10-03T02:48:09.031Z"
+    },
+    {
       "id": "act_1790993517702_6xf2a",
       "admin_user": "Admin",
       "action": "LOGIN_SUCCESS",

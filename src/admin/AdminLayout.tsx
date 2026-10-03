@@ -56,6 +56,18 @@ export default function AdminLayout() {
     })
   }, [])
 
+  // Ensure mini-me mascot is never rendered or running on the admin dashboard
+  useEffect(() => {
+    const purgeMinime = () => {
+      document.querySelectorAll('mini-me').forEach((el) => {
+        el.remove()
+      })
+    }
+    purgeMinime()
+    const timer = setTimeout(purgeMinime, 100)
+    return () => clearTimeout(timer)
+  }, [location.pathname])
+
   // Route Guard: require authentication
   if (!auth.isAuthenticated()) {
     return <Navigate to="/admin/login" state={{ from: location }} replace />

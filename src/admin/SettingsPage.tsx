@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Save } from 'lucide-react'
+import { Save, Lock, KeyRound } from 'lucide-react'
 import { adminApi, api, type Setting } from '../lib/api'
 import { PageHeader, Field, Input, Textarea, Btn, Toast } from './ui'
 
@@ -14,6 +14,11 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+
+  // Password change state
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [changingPass, setChangingPass] = useState(false)
 
   useEffect(() => {
     api.settings.list().then((data) => {
@@ -32,6 +37,34 @@ export default function SettingsPage() {
       setToast({ message: e.message, type: 'error' })
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newPassword.trim()) {
+      setToast({ message: 'Please enter a new password', type: 'error' })
+      return
+    }
+    if (newPassword.trim().length < 6) {
+      setToast({ message: 'Password must be at least 6 characters long', type: 'error' })
+      return
+    }
+    if (newPassword.trim() !== confirmPassword.trim()) {
+      setToast({ message: 'Passwords do not match', type: 'error' })
+      return
+    }
+
+    setChangingPass(true)
+    try {
+      await api.auth.changePassword({ new_password: newPassword.trim() })
+      setToast({ message: 'Password successfully changed on backend!', type: 'success' })
+      setNewPassword('')
+      setConfirmPassword('')
+    } catch (err: any) {
+      setToast({ message: err?.message || 'Failed to update password', type: 'error' })
+    } finally {
+      setChangingPass(false)
     }
   }
 
@@ -80,6 +113,43 @@ export default function SettingsPage() {
           <Field label="Social Links (JSON)" hint="Used internally for SEO">
             <Textarea value={form.social_links_json ?? ''} onChange={f('social_links_json')} rows={4} style={{ fontFamily: 'var(--mono)', fontSize: '0.8rem' }} />
           </Field>
+        </section>
+
+        <section className="settings-section" style={{ border: '1px solid rgba(255, 255, 255, 0.15)', background: 'rgba(255, 255, 255, 0.02)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+            <Lock size={16} style={{ color: '#fff' }} />
+            <h2 className="settings-section-title" style={{ margin: 0 }}>Security & Password</h2>
+          </div>
+          <p style={{ fontSize: '0.8rem', color: 'var(--admin-muted)', marginBottom: '1.25rem' }}>
+            Updates your administrator password on the backend server.
+          </p>
+
+          <form onSubmit={handlePasswordChange}>
+            <Field label="New Password">
+              <Input
+                type="password"
+                placeholder="Enter new password (min. 6 characters)"
+                value={newPassword}
+                onChange={(e: any) => setNewPassword(e.target.value)}
+                autoComplete="new-password"
+              />
+            </Field>
+            <Field label="Confirm New Password">
+              <Input
+                type="password"
+                placeholder="Confirm new password"
+                value={confirmPassword}
+                onChange={(e: any) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
+              />
+            </Field>
+
+            <div style={{ marginTop: '1rem' }}>
+              <Btn type="submit" icon={<KeyRound size={14} />} loading={changingPass}>
+                Update Admin Password
+              </Btn>
+            </div>
+          </form>
         </section>
       </div>
 

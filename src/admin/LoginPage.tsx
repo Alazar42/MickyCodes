@@ -22,6 +22,18 @@ export default function LoginPage() {
     }
   }, [navigate, location])
 
+  // Ensure mini-me mascot is not running on login page
+  useEffect(() => {
+    const purgeMinime = () => {
+      document.querySelectorAll('mini-me').forEach((el) => {
+        el.remove()
+      })
+    }
+    purgeMinime()
+    const timer = setTimeout(purgeMinime, 100)
+    return () => clearTimeout(timer)
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const cleanUser = username.trim()

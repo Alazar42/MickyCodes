@@ -28,10 +28,10 @@ function App() {
 
   useEffect(() => {
     // Fetch live data from backend, fall back to static data on error
-    api.projects.list().then((data) => { if (data.length) setProjects(data) }).catch(() => {})
-    api.experience.list().then((data) => { if (data.length) setExperience(data) }).catch(() => {})
-    api.skills.list().then((data) => { if (data.length) setSkills(data) }).catch(() => {})
-    api.achievements.list().then((data) => { if (data.length) setAwards(data) }).catch(() => {})
+    api.projects.list().then((data) => { if (Array.isArray(data) && data.length) setProjects(data) }).catch(() => {})
+    api.experience.list().then((data) => { if (Array.isArray(data) && data.length) setExperience(data) }).catch(() => {})
+    api.skills.list().then((data) => { if (Array.isArray(data) && data.length) setSkills(data) }).catch(() => {})
+    api.achievements.list().then((data) => { if (Array.isArray(data) && data.length) setAwards(data) }).catch(() => {})
 
     // Track page view
     api.analytics.track('page_view', 'home').catch(() => {})

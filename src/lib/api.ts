@@ -48,7 +48,22 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
       const message = data?.error || data?.message || `API error ${res.status}: ${res.statusText}`
       throw new Error(message)
     }
-    return res.json() as Promise<T>
+
+    // Handle 204 No Content or empty responses safely
+    if (res.status === 204 || res.status === 205) {
+      return null as T
+    }
+
+    const text = await res.text()
+    if (!text || text.trim() === '') {
+      return null as T
+    }
+
+    try {
+      return JSON.parse(text) as T
+    } catch {
+      return text as unknown as T
+    }
   } catch (err: any) {
     // If the server responded with an error (e.g. 401 Unauthorized), rethrow so UI shows real server error
     if (err.message && !err.message.includes('Failed to fetch') && !err.message.includes('NetworkError')) {
