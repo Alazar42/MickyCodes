@@ -16,7 +16,7 @@ export default function ExperiencePage() {
   const [saving, setSaving] = useState(false)
 
   const openCreate = () => { setForm(emptyForm); crud.openCreate() }
-  const openEdit = (e: Experience) => { const { id, ...rest } = e; setForm(rest); crud.openEdit(e) }
+  const openEdit = (e: Experience) => { const { id: _id, ...rest } = e; setForm(rest); crud.openEdit(e) }
 
   const save = async () => {
     setSaving(true)
@@ -37,24 +37,37 @@ export default function ExperiencePage() {
     setForm((s) => ({ ...s, [k]: e.target.type === 'number' ? Number(e.target.value) : e.target.value }))
 
   const cols = [
-    { key: 'title', label: 'Role', render: (e: Experience) => (
+    { key: 'title', label: 'Role & Organization', render: (e: Experience) => (
       <div>
-        <div style={{ fontWeight: 500, color: 'var(--admin-text)' }}>{e.title}</div>
-        <div style={{ fontSize: '0.72rem', color: 'var(--admin-muted)' }}>{e.organization}</div>
+        <div className="font-semibold text-white text-sm">{e.title}</div>
+        <div className="text-[0.72rem] text-neutral-400 font-mono mt-0.5">{e.organization}</div>
       </div>
     )},
-    { key: 'start_date', label: 'Period', render: (e: Experience) => (
-      <span style={{ fontSize: '0.8rem', color: 'var(--admin-muted)' }}>
-        {e.start_date} → {e.is_current ? 'Present' : e.end_date}
-      </span>
+    { key: 'start_date', label: 'Timeline', render: (e: Experience) => (
+      <div className="flex items-center gap-2 font-mono text-xs">
+        <span className="text-neutral-300">{e.start_date || 'Start'}</span>
+        <span className="text-neutral-600">→</span>
+        {e.is_current ? (
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[0.65rem] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Present
+          </span>
+        ) : (
+          <span className="text-neutral-400">{e.end_date || 'End'}</span>
+        )}
+      </div>
     )},
-    { key: 'location', label: 'Location' },
-    { key: 'display_order', label: 'Order' },
+    { key: 'location', label: 'Location', render: (e: Experience) => (
+      <span className="text-xs text-neutral-300 font-mono">{e.location || '—'}</span>
+    )},
+    { key: 'display_order', label: 'Order', render: (e: Experience) => (
+      <span className="font-mono text-xs text-neutral-500">#{e.display_order}</span>
+    )},
     { key: 'actions', label: '', width: '100px', render: (e: Experience) => (
       <ActionRow>
-        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(e)} />
+        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(e)} title="Edit" />
         <Btn size="sm" variant="danger" icon={<Trash2 size={13} />}
-          onClick={() => { if (confirm('Delete experience?')) crud.mutate(() => adminApi.experience.delete(e.id!), 'Deleted!') }} />
+          onClick={() => { if (confirm('Delete experience?')) crud.mutate(() => adminApi.experience.delete(e.id!), 'Deleted!') }} title="Delete" />
       </ActionRow>
     )},
   ]
@@ -62,7 +75,12 @@ export default function ExperiencePage() {
   return (
     <div className="admin-page">
       {crud.toast && <Toast {...crud.toast} onDismiss={crud.dismissToast} />}
-      <PageHeader title="Experience" subtitle="Work history and roles" action={<Btn icon={<Plus size={14} />} onClick={openCreate}>New Entry</Btn>} />
+      <PageHeader
+        monoTag="CAREER / WORK HISTORY"
+        title="Experience"
+        subtitle="Manage professional background, institutions, and roles"
+        action={<Btn icon={<Plus size={14} />} onClick={openCreate}>New Entry</Btn>}
+      />
       <DataTable columns={cols} data={crud.data} loading={crud.loading} error={crud.error} emptyText="No experience entries yet." />
 
       <Modal open={crud.showModal} onClose={crud.closeModal} title={crud.editItem ? 'Edit Experience' : 'New Experience'} size="md">

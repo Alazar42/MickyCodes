@@ -28,7 +28,7 @@ export default function ProjectsPage() {
 
   const openCreate = () => { setForm(emptyForm); crud.openCreate() }
   const openEdit = (p: Project) => {
-    const { id, created_date, updated_date, views, ...rest } = p
+    const { id: _id, created_date: _created_date, updated_date: _updated_date, views: _views, ...rest } = p
     setForm(rest as FormState)
     crud.openEdit(p)
   }
@@ -55,29 +55,37 @@ export default function ProjectsPage() {
   const cols = [
     { key: 'name', label: 'Name', render: (p: Project) => (
       <div>
-        <div style={{ fontWeight: 500, color: 'var(--admin-text)' }}>{p.name}</div>
-        <div style={{ fontSize: '0.72rem', color: 'var(--admin-muted)', fontFamily: 'var(--mono)' }}>{p.slug}</div>
+        <div className="font-semibold text-white text-sm">{p.name}</div>
+        <div className="text-[0.72rem] text-neutral-400 font-mono mt-0.5">{p.slug}</div>
       </div>
     )},
-    { key: 'category', label: 'Category' },
+    { key: 'category', label: 'Category', render: (p: Project) => (
+      <span className="text-[0.7rem] font-mono text-neutral-300 bg-white/[0.04] border border-white/10 px-2.5 py-0.5 rounded-full">
+        {p.category || 'General'}
+      </span>
+    )},
     { key: 'status', label: 'Status', render: (p: Project) => (
       <Badge color={statusColor[p.status?.toLowerCase()] ?? 'gray'}>{p.status}</Badge>
     )},
     { key: 'featured', label: 'Featured', render: (p: Project) => (
-      <span style={{ color: p.featured ? '#34d399' : 'var(--admin-muted)' }}>
-        {p.featured ? '★' : '—'}
+      <span className={`font-mono text-xs ${p.featured ? 'text-emerald-400' : 'text-neutral-600'}`}>
+        {p.featured ? '★ YES' : '—'}
       </span>
     )},
-    { key: 'views', label: 'Views' },
+    { key: 'views', label: 'Views', render: (p: Project) => (
+      <span className="font-mono text-xs text-neutral-300">
+        {(p.views || 0).toLocaleString()}
+      </span>
+    )},
     { key: 'actions', label: '', width: '160px', render: (p: Project) => (
       <ActionRow>
-        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(p)} />
+        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(p)} title="Edit" />
         <Btn size="sm" variant="ghost" icon={<Globe size={13} />}
-          onClick={() => crud.mutate(() => adminApi.projects.publish(p.id!), 'Published!')} />
+          onClick={() => crud.mutate(() => adminApi.projects.publish(p.id!), 'Published!')} title="Publish" />
         <Btn size="sm" variant="ghost" icon={<Archive size={13} />}
-          onClick={() => crud.mutate(() => adminApi.projects.archive(p.id!), 'Archived!')} />
+          onClick={() => crud.mutate(() => adminApi.projects.archive(p.id!), 'Archived!')} title="Archive" />
         <Btn size="sm" variant="danger" icon={<Trash2 size={13} />}
-          onClick={() => { if (confirm('Delete project?')) crud.mutate(() => adminApi.projects.delete(p.id!), 'Deleted!') }} />
+          onClick={() => { if (confirm('Delete project?')) crud.mutate(() => adminApi.projects.delete(p.id!), 'Deleted!') }} title="Delete" />
       </ActionRow>
     )},
   ]
@@ -90,8 +98,9 @@ export default function ProjectsPage() {
       {crud.toast && <Toast {...crud.toast} onDismiss={crud.dismissToast} />}
 
       <PageHeader
+        monoTag="PORTFOLIO WORKS / SHOWCASE"
         title="Projects"
-        subtitle="Manage your portfolio projects"
+        subtitle="Manage, publish, and track works featured on MickyCodes"
         action={<Btn icon={<Plus size={14} />} onClick={openCreate}>New Project</Btn>}
       />
 

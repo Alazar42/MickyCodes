@@ -40,8 +40,22 @@ export default function TelegramCommunity() {
   }, [])
 
   useEffect(() => {
-    loadFeed()
-  }, [loadFeed])
+    let active = true
+    fetchLatestTelegramFeed()
+      .then((data) => {
+        if (active) {
+          setFeed(data)
+          setLoading(false)
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to load telegram feed:', err)
+        if (active) setLoading(false)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
 
   const latestThree = feed.postIds.slice(0, 3)
 

@@ -1,0 +1,391 @@
+{
+  "projects": [
+    {
+      "id": "proj_ai_studio",
+      "name": "AI Studio Build",
+      "slug": "ai-studio-build",
+      "short_description": "Full-stack AI developer ecosystem & generative web workbench",
+      "full_description": "Comprehensive developer workbench and engineering platform with dynamic live preview, multi-model execution, and instant cloud deploys.",
+      "status": "published",
+      "category": "Full-Stack",
+      "featured": true,
+      "thumbnail": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80",
+      "gallery": "[]",
+      "repository_url": "https://github.com/mickyas",
+      "live_url": "https://mickycodes.dev",
+      "documentation_url": "https://docs.mickycodes.dev",
+      "download_url": "",
+      "technologies": "React, TypeScript, Node.js, Express, Tailwind CSS, Vite",
+      "tags": "Web, AI, Cloud",
+      "start_date": "2024-01-10",
+      "release_date": "2024-06-20",
+      "created_date": "2026-10-03T02:01:56.829Z",
+      "updated_date": "2026-10-03T02:01:56.829Z",
+      "views": 1420
+    },
+    {
+      "id": "proj_sheger_gebeta",
+      "name": "Sheger Gebeta Food Platform",
+      "slug": "sheger-gebeta",
+      "short_description": "Discovering culinary gems and gourmet experiences across Addis Ababa",
+      "full_description": "Curated food discovery directory and dining guide for the vibrant capital with community reviews and real-time maps.",
+      "status": "published",
+      "category": "Mobile / Web",
+      "featured": true,
+      "thumbnail": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80",
+      "gallery": "[]",
+      "repository_url": "https://github.com/mickyas/sheger-gebeta",
+      "live_url": "https://shegergebeta.com",
+      "documentation_url": "",
+      "download_url": "",
+      "technologies": "Flutter, Node.js, PostgreSQL, Google Maps API",
+      "tags": "Mobile, Community, Food",
+      "start_date": "2023-04-15",
+      "release_date": "2023-11-01",
+      "created_date": "2026-10-03T02:01:56.829Z",
+      "updated_date": "2026-10-03T02:01:56.829Z",
+      "views": 2890
+    },
+    {
+      "id": "proj_unity_forge",
+      "name": "Project Aether 3D Engine",
+      "slug": "project-aether-3d",
+      "short_description": "High-performance interactive shader playground and WebGL renderer",
+      "full_description": "Custom WebGL and WebGPU rendering experiments exploring compute shaders, volumetric fog, and atmospheric raymarching.",
+      "status": "published",
+      "category": "Game Dev / Graphics",
+      "featured": true,
+      "thumbnail": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80",
+      "gallery": "[]",
+      "repository_url": "https://github.com/mickyas/aether-gl",
+      "live_url": "",
+      "documentation_url": "",
+      "download_url": "",
+      "technologies": "Three.js, WebGL, GLSL, WebGPU",
+      "tags": "3D, Shaders, WebGL",
+      "start_date": "2023-08-01",
+      "release_date": "2024-02-14",
+      "created_date": "2026-10-03T02:01:56.829Z",
+      "updated_date": "2026-10-03T02:01:56.829Z",
+      "views": 850
+    }
+  ],
+  "posts": [
+    {
+      "id": "post_1",
+      "title": "Architecting Robust OpenAPI 3.0 Backends for Modern SPAs",
+      "slug": "architecting-openapi-3-backends",
+      "excerpt": "Deep dive into designing contract-first APIs with secure bearer tokens and reactive dashboards.",
+      "content": "Building web applications that scale demands rigorous API contracts...",
+      "cover_image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80",
+      "tags": "Architecture, API, TypeScript",
+      "status": "published",
+      "published_date": "2024-05-12",
+      "updated_date": "2024-05-12",
+      "views": 520
+    },
+    {
+      "id": "post_2",
+      "title": "Exploring Shader Programming with WebGL and Three.js",
+      "slug": "exploring-shader-programming-webgl",
+      "excerpt": "How math, trigonometry, and GPUs come together to build photorealistic visual effects.",
+      "content": "Shaders are small programs that run on the graphics card...",
+      "cover_image": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&auto=format&fit=crop&q=80",
+      "tags": "Graphics, WebGL, Math",
+      "status": "published",
+      "published_date": "2024-03-22",
+      "updated_date": "2024-03-22",
+      "views": 740
+    }
+  ],
+  "skills": [
+    {
+      "id": "sk_ts",
+      "name": "TypeScript",
+      "category": "Frontend",
+      "icon": "Code2",
+      "description": "Strong static typing across React, Next.js, and Node.js microservices",
+      "display_order": 1,
+      "featured": true,
+      "proficiency": 96
+    },
+    {
+      "id": "sk_react",
+      "name": "React & Next.js",
+      "category": "Frontend",
+      "icon": "Atom",
+      "description": "Reactive architecture, server components, state management",
+      "display_order": 2,
+      "featured": true,
+      "proficiency": 94
+    },
+    {
+      "id": "sk_node",
+      "name": "Node.js & Express",
+      "category": "Backend",
+      "icon": "Server",
+      "description": "REST APIs, OpenAPI 3.0 specs, JWT authentication, background workers",
+      "display_order": 3,
+      "featured": true,
+      "proficiency": 92
+    },
+    {
+      "id": "sk_python",
+      "name": "Python",
+      "category": "Backend",
+      "icon": "Terminal",
+      "description": "Data pipelines, automation scripts, FastAPI microservices",
+      "display_order": 4,
+      "featured": true,
+      "proficiency": 88
+    },
+    {
+      "id": "sk_unity",
+      "name": "Game Dev & Unity",
+      "category": "Game Dev",
+      "icon": "Gamepad2",
+      "description": "C# scripting, gameplay loops, physics simulations, 3D math",
+      "display_order": 5,
+      "featured": true,
+      "proficiency": 85
+    },
+    {
+      "id": "sk_sql",
+      "name": "SQL & Database Design",
+      "category": "Database",
+      "icon": "Database",
+      "description": "Relational modeling, indexing, ACID transactions, migrations",
+      "display_order": 6,
+      "featured": true,
+      "proficiency": 90
+    }
+  ],
+  "experience": [
+    {
+      "id": "exp_1",
+      "title": "Senior Software Engineer & Lead Developer",
+      "organization": "Freelance & Independent Contracts",
+      "description": "Architecting scalable web applications, mobile platforms, and game systems for global clients and startups.",
+      "start_date": "2023-01",
+      "end_date": "",
+      "location": "Addis Ababa, Ethiopia / Remote",
+      "external_link": "https://mickycodes.dev",
+      "is_current": true
+    },
+    {
+      "id": "exp_2",
+      "title": "Full-Stack Developer",
+      "organization": "Technology Solutions & Engineering",
+      "description": "Engineered high-throughput REST APIs, internal dashboard CMS, and client-facing interfaces.",
+      "start_date": "2021-06",
+      "end_date": "2022-12",
+      "location": "Addis Ababa, Ethiopia",
+      "external_link": "",
+      "is_current": false
+    }
+  ],
+  "achievements": [],
+  "releases": [
+    {
+      "id": "rel_1",
+      "version": "v2.4.0",
+      "title": "OpenAPI 3.0 & Terminal Security",
+      "description": "Production auth gateway, persistent CMS store, and portfolio synchronizer.",
+      "status": "released",
+      "release_date": "2026-10-03T02:01:56.830Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat_1",
+      "name": "Full-Stack",
+      "slug": "full-stack",
+      "description": "End-to-end web architectures"
+    },
+    {
+      "id": "cat_2",
+      "name": "Mobile / Web",
+      "slug": "mobile-web",
+      "description": "Cross-platform native applications"
+    },
+    {
+      "id": "cat_3",
+      "name": "Game Dev",
+      "slug": "game-dev",
+      "description": "Interactive 3D real-time experiences"
+    }
+  ],
+  "tags": [
+    {
+      "id": "tag_1",
+      "name": "TypeScript",
+      "slug": "typescript"
+    },
+    {
+      "id": "tag_2",
+      "name": "React",
+      "slug": "react"
+    },
+    {
+      "id": "tag_3",
+      "name": "Node.js",
+      "slug": "node-js"
+    }
+  ],
+  "social_links": [
+    {
+      "id": "soc_1",
+      "platform": "GitHub",
+      "url": "https://github.com/mickyas",
+      "icon": "Github",
+      "display_order": 1,
+      "is_active": true
+    },
+    {
+      "id": "soc_2",
+      "platform": "Telegram",
+      "url": "https://t.me/MickyCodes",
+      "icon": "Send",
+      "display_order": 2,
+      "is_active": true
+    },
+    {
+      "id": "soc_3",
+      "platform": "Email",
+      "url": "mailto:alazartesfaye42@gmail.com",
+      "icon": "Mail",
+      "display_order": 3,
+      "is_active": true
+    }
+  ],
+  "settings": [
+    {
+      "key": "site_title",
+      "value": "MickyCodes // Mickyas Tesfaye Portfolio",
+      "category": "general"
+    },
+    {
+      "key": "contact_email",
+      "value": "alazartesfaye42@gmail.com",
+      "category": "contact"
+    },
+    {
+      "key": "telegram_channel",
+      "value": "MickyCodes",
+      "category": "social"
+    }
+  ],
+  "navigation": [
+    {
+      "id": "nav_1",
+      "label": "About",
+      "url": "#about",
+      "display_order": 1,
+      "is_active": true
+    },
+    {
+      "id": "nav_2",
+      "label": "Projects",
+      "url": "#projects",
+      "display_order": 2,
+      "is_active": true
+    },
+    {
+      "id": "nav_3",
+      "label": "Experience",
+      "url": "#experience",
+      "display_order": 3,
+      "is_active": true
+    },
+    {
+      "id": "nav_4",
+      "label": "Skills",
+      "url": "#skills",
+      "display_order": 4,
+      "is_active": true
+    },
+    {
+      "id": "nav_5",
+      "label": "Contact",
+      "url": "#contact",
+      "display_order": 5,
+      "is_active": true
+    }
+  ],
+  "messages": [],
+  "media": [],
+  "activity": [
+    {
+      "id": "act_1790993517702_6xf2a",
+      "admin_user": "Admin",
+      "action": "LOGIN_SUCCESS",
+      "target_type": "Auth",
+      "target_id": "usr-micky-01",
+      "details": "Admin authenticated from 127.0.0.1",
+      "timestamp": "2026-10-03T02:11:57.702Z"
+    },
+    {
+      "id": "act_1790993352323_e9q1s",
+      "admin_user": "Admin",
+      "action": "LOGIN_SUCCESS",
+      "target_type": "Auth",
+      "target_id": "usr-micky-01",
+      "details": "Admin authenticated from 127.0.0.1",
+      "timestamp": "2026-10-03T02:09:12.323Z"
+    },
+    {
+      "id": "act_1790993349019_91uwu",
+      "admin_user": "Admin",
+      "action": "LOGIN_SUCCESS",
+      "target_type": "Auth",
+      "target_id": "usr-micky-01",
+      "details": "Admin authenticated from 127.0.0.1",
+      "timestamp": "2026-10-03T02:09:09.019Z"
+    },
+    {
+      "id": "act_1790993177595_k1p9y",
+      "admin_user": "Admin",
+      "action": "LOGIN_SUCCESS",
+      "target_type": "Auth",
+      "target_id": "usr-micky-01",
+      "details": "Admin authenticated from 127.0.0.1",
+      "timestamp": "2026-10-03T02:06:17.595Z"
+    },
+    {
+      "id": "act_1790993172773_txmv5",
+      "admin_user": "Admin",
+      "action": "LOGIN_SUCCESS",
+      "target_type": "Auth",
+      "target_id": "usr-micky-01",
+      "details": "Admin authenticated from 127.0.0.1",
+      "timestamp": "2026-10-03T02:06:12.773Z"
+    },
+    {
+      "id": "act_1790993167802_91ikn",
+      "admin_user": "Admin",
+      "action": "LOGIN_SUCCESS",
+      "target_type": "Auth",
+      "target_id": "usr-micky-01",
+      "details": "Admin authenticated from 127.0.0.1",
+      "timestamp": "2026-10-03T02:06:07.802Z"
+    },
+    {
+      "id": "act_1790992922752_m1il3",
+      "admin_user": "Admin",
+      "action": "LOGIN_SUCCESS",
+      "target_type": "Auth",
+      "target_id": "usr-micky-01",
+      "details": "Admin authenticated from 127.0.0.1",
+      "timestamp": "2026-10-03T02:02:02.752Z"
+    },
+    {
+      "id": "act_init",
+      "admin_user": "System",
+      "action": "INIT",
+      "target_type": "System",
+      "target_id": "srv",
+      "details": "Full-stack Express server online",
+      "timestamp": "2026-10-03T02:01:56.830Z"
+    }
+  ]
+}

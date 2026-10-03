@@ -25,7 +25,7 @@ export default function PostsPage() {
 
   const openCreate = () => { setForm(emptyForm); crud.openCreate() }
   const openEdit = (p: Post) => {
-    const { id, published_date, updated_date, views, ...rest } = p
+    const { id: _id, published_date: _published_date, updated_date: _updated_date, views: _views, ...rest } = p
     setForm(rest as FormState)
     crud.openEdit(p)
   }
@@ -53,35 +53,41 @@ export default function PostsPage() {
     setForm((s) => ({ ...s, [k]: e.target.value }))
 
   const cols = [
-    { key: 'title', label: 'Title', render: (p: Post) => (
+    { key: 'title', label: 'Article / Writeup', render: (p: Post) => (
       <div>
-        <div style={{ fontWeight: 500, color: 'var(--admin-text)' }}>{p.title}</div>
-        <div style={{ fontSize: '0.72rem', color: 'var(--admin-muted)', fontFamily: 'var(--mono)' }}>{p.slug}</div>
+        <div className="font-semibold text-white text-sm">{p.title}</div>
+        <div className="text-[0.72rem] text-neutral-400 font-mono mt-0.5">{p.slug}</div>
       </div>
     )},
     { key: 'excerpt', label: 'Excerpt', render: (p: Post) => (
-      <span style={{ color: 'var(--admin-muted)', fontSize: '0.8rem' }}>
-        {p.excerpt?.slice(0, 60)}{p.excerpt?.length > 60 ? '…' : ''}
+      <span className="text-neutral-400 text-xs line-clamp-1">
+        {p.excerpt || 'No excerpt'}
       </span>
     )},
     { key: 'tags', label: 'Tags', render: (p: Post) => (
-      <span style={{ fontFamily: 'var(--mono)', fontSize: '0.72rem', color: 'var(--admin-muted)' }}>{p.tags}</span>
+      <span className="font-mono text-[0.7rem] text-neutral-300 bg-white/[0.04] border border-white/10 px-2 py-0.5 rounded-md">
+        {p.tags || '—'}
+      </span>
     )},
     { key: 'status', label: 'Status', render: (p: Post) => (
       <Badge color={statusColor[p.status?.toLowerCase()] ?? 'gray'}>{p.status}</Badge>
     )},
-    { key: 'views', label: 'Views' },
+    { key: 'views', label: 'Views', render: (p: Post) => (
+      <span className="font-mono text-xs text-neutral-300">
+        {(p.views || 0).toLocaleString()}
+      </span>
+    )},
     { key: 'actions', label: '', width: '160px', render: (p: Post) => (
       <ActionRow>
-        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(p)} />
+        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(p)} title="Edit" />
         {p.status !== 'published'
           ? <Btn size="sm" variant="ghost" icon={<Eye size={13} />}
-              onClick={() => crud.mutate(() => adminApi.posts.publish(p.id!), 'Published!')} />
+              onClick={() => crud.mutate(() => adminApi.posts.publish(p.id!), 'Published!')} title="Publish" />
           : <Btn size="sm" variant="ghost" icon={<EyeOff size={13} />}
-              onClick={() => crud.mutate(() => adminApi.posts.unpublish(p.id!), 'Unpublished!')} />
+              onClick={() => crud.mutate(() => adminApi.posts.unpublish(p.id!), 'Unpublished!')} title="Unpublish" />
         }
         <Btn size="sm" variant="danger" icon={<Trash2 size={13} />}
-          onClick={() => { if (confirm('Delete post?')) crud.mutate(() => adminApi.posts.delete(p.id!), 'Deleted!') }} />
+          onClick={() => { if (confirm('Delete post?')) crud.mutate(() => adminApi.posts.delete(p.id!), 'Deleted!') }} title="Delete" />
       </ActionRow>
     )},
   ]
@@ -90,8 +96,9 @@ export default function PostsPage() {
     <div className="admin-page">
       {crud.toast && <Toast {...crud.toast} onDismiss={crud.dismissToast} />}
       <PageHeader
+        monoTag="PUBLICATIONS / ENGINEERING LOG"
         title="Posts"
-        subtitle="Manage blog posts and articles"
+        subtitle="Manage articles, tutorials, and engineering writeups"
         action={<Btn icon={<Plus size={14} />} onClick={openCreate}>New Post</Btn>}
       />
       <DataTable columns={cols} data={crud.data} loading={crud.loading} error={crud.error} emptyText="No posts yet." />

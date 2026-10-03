@@ -33,13 +33,19 @@ export default function TagsPage() {
   }
 
   const cols = [
-    { key: 'name', label: 'Name', render: (t: TagItem) => <span style={{ fontWeight: 500, color: 'var(--admin-text)' }}>{t.name}</span> },
-    { key: 'slug', label: 'Slug', render: (t: TagItem) => <span style={{ fontFamily: 'var(--mono)', fontSize: '0.8rem', color: 'var(--admin-muted)' }}>{t.slug}</span> },
+    { key: 'name', label: 'Tag Name', render: (t: TagItem) => (
+      <span className="font-semibold text-white text-sm">{t.name}</span>
+    )},
+    { key: 'slug', label: 'Slug / Identifier', render: (t: TagItem) => (
+      <span className="font-mono text-xs text-neutral-300 bg-white/[0.04] border border-white/10 px-2.5 py-0.5 rounded-md">
+        #{t.slug}
+      </span>
+    )},
     { key: 'actions', label: '', width: '100px', render: (t: TagItem) => (
       <ActionRow>
-        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(t)} />
+        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(t)} title="Edit" />
         <Btn size="sm" variant="danger" icon={<Trash2 size={13} />}
-          onClick={() => { if (confirm('Delete tag?')) crud.mutate(() => adminApi.tags.delete(t.id!), 'Deleted!') }} />
+          onClick={() => { if (confirm('Delete tag?')) crud.mutate(() => adminApi.tags.delete(t.id!), 'Deleted!') }} title="Delete" />
       </ActionRow>
     )},
   ]
@@ -47,7 +53,12 @@ export default function TagsPage() {
   return (
     <div className="admin-page">
       {crud.toast && <Toast {...crud.toast} onDismiss={crud.dismissToast} />}
-      <PageHeader title="Tags" subtitle="Content tags for projects and posts" action={<Btn icon={<Plus size={14} />} onClick={openCreate}>New Tag</Btn>} />
+      <PageHeader
+        monoTag="TAXONOMY / KEYWORDS"
+        title="Tags"
+        subtitle="Manage keyword taxonomy for projects and engineering writeups"
+        action={<Btn icon={<Plus size={14} />} onClick={openCreate}>New Tag</Btn>}
+      />
       <DataTable columns={cols} data={crud.data} loading={crud.loading} error={crud.error} emptyText="No tags yet." />
 
       <Modal open={crud.showModal} onClose={crud.closeModal} title={crud.editItem ? 'Edit Tag' : 'New Tag'} size="sm">

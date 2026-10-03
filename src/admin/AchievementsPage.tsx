@@ -16,7 +16,7 @@ export default function AchievementsPage() {
   const [saving, setSaving] = useState(false)
 
   const openCreate = () => { setForm(emptyForm); crud.openCreate() }
-  const openEdit = (a: Achievement) => { const { id, ...rest } = a; setForm(rest); crud.openEdit(a) }
+  const openEdit = (a: Achievement) => { const { id: _id, ...rest } = a; setForm(rest); crud.openEdit(a) }
 
   const save = async () => {
     setSaving(true)
@@ -37,19 +37,26 @@ export default function AchievementsPage() {
     setForm((s) => ({ ...s, [k]: e.target.type === 'number' ? Number(e.target.value) : e.target.value }))
 
   const cols = [
-    { key: 'title', label: 'Title', render: (a: Achievement) => (
+    { key: 'title', label: 'Honor / Award', render: (a: Achievement) => (
       <div>
-        <div style={{ fontWeight: 500, color: 'var(--admin-text)' }}>{a.title}</div>
-        <div style={{ fontSize: '0.72rem', color: 'var(--admin-muted)' }}>{a.organization}</div>
+        <div className="font-semibold text-white text-sm">{a.title}</div>
+        <div className="text-[0.72rem] text-neutral-400 font-mono mt-0.5">{a.organization || 'General Award'}</div>
       </div>
     )},
-    { key: 'date', label: 'Date' },
-    { key: 'display_order', label: 'Order' },
+    { key: 'date', label: 'Date', render: (a: Achievement) => (
+      <span className="font-mono text-xs text-neutral-300">{a.date || '—'}</span>
+    )},
+    { key: 'project_association', label: 'Association', render: (a: Achievement) => (
+      <span className="text-xs text-neutral-400">{a.project_association || 'Independent'}</span>
+    )},
+    { key: 'display_order', label: 'Order', render: (a: Achievement) => (
+      <span className="font-mono text-xs text-neutral-500">#{a.display_order}</span>
+    )},
     { key: 'actions', label: '', width: '100px', render: (a: Achievement) => (
       <ActionRow>
-        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(a)} />
+        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(a)} title="Edit" />
         <Btn size="sm" variant="danger" icon={<Trash2 size={13} />}
-          onClick={() => { if (confirm('Delete achievement?')) crud.mutate(() => adminApi.achievements.delete(a.id!), 'Deleted!') }} />
+          onClick={() => { if (confirm('Delete achievement?')) crud.mutate(() => adminApi.achievements.delete(a.id!), 'Deleted!') }} title="Delete" />
       </ActionRow>
     )},
   ]
@@ -57,7 +64,12 @@ export default function AchievementsPage() {
   return (
     <div className="admin-page">
       {crud.toast && <Toast {...crud.toast} onDismiss={crud.dismissToast} />}
-      <PageHeader title="Achievements" subtitle="Awards, certificates, and recognition" action={<Btn icon={<Plus size={14} />} onClick={openCreate}>New Achievement</Btn>} />
+      <PageHeader
+        monoTag="HONORS & RECOGNITION"
+        title="Achievements"
+        subtitle="Awards, hackathon wins, certifications, and public honors"
+        action={<Btn icon={<Plus size={14} />} onClick={openCreate}>New Achievement</Btn>}
+      />
       <DataTable columns={cols} data={crud.data} loading={crud.loading} error={crud.error} emptyText="No achievements yet." />
 
       <Modal open={crud.showModal} onClose={crud.closeModal} title={crud.editItem ? 'Edit Achievement' : 'New Achievement'} size="md">

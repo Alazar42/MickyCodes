@@ -1,18 +1,82 @@
-const BASE = import.meta.env.VITE_BACKEND_URL as string
+import { handleCmsRequest } from './cmsBackend'
+
+const BASE = (import.meta.env.VITE_BACKEND_URL as string) || ''
+
+function getStoredToken(): string | null {
+  try {
+    return localStorage.getItem('micky_admin_token')
+  } catch {
+    return null
+  }
+}
+
+function createHeaders(options?: RequestInit): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+  const token = getStoredToken()
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+  if (options?.headers) {
+    if (options.headers instanceof Headers) {
+      options.headers.forEach((val, key) => {
+        headers[key] = val
+      })
+    } else if (Array.isArray(options.headers)) {
+      options.headers.forEach(([key, val]) => {
+        headers[key] = val
+      })
+    } else {
+      Object.assign(headers, options.headers)
+    }
+  }
+  return headers
+}
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...(options?.headers ?? {}) },
-    ...options,
-  })
-  if (!res.ok) {
-    const text = await res.text().catch(() => res.statusText)
-    throw new Error(`API ${res.status}: ${text}`)
+  const headers = createHeaders(options)
+  const url = BASE ? `${BASE}${path}` : path
+
+  try {
+    const res = await fetch(url, {
+      ...options,
+      headers,
+    })
+    if (!res.ok) {
+      const data = await res.json().catch(() => null)
+      const message = data?.error || data?.message || `API error ${res.status}: ${res.statusText}`
+      throw new Error(message)
+    }
+    return res.json() as Promise<T>
+  } catch (err: any) {
+    // If the server responded with an error (e.g. 401 Unauthorized), rethrow so UI shows real server error
+    if (err.message && !err.message.includes('Failed to fetch') && !err.message.includes('NetworkError')) {
+      throw err
+    }
+    console.warn(`[API] Network call to ${url} failed, using local CMS store fallback:`, err)
+    return handleCmsRequest<T>(path, {
+      ...options,
+      headers,
+    })
   }
-  return res.json() as Promise<T>
 }
 
 // ─── Public Types ────────────────────────────────────────────────────────────
+
+export interface AdminUser {
+  id: string
+  name: string
+  email: string
+  role: string
+  avatar?: string
+}
+
+export interface LoginResponse {
+  token: string
+  user: AdminUser
+  expires_in?: number
+}
 
 export interface Project {
   id?: string
@@ -209,6 +273,16 @@ export const api = {
   // Navigation
   navigation: {
     list: () => request<NavigationItem[]>('/api/v1/navigation'),
+  },
+  // Auth
+  auth: {
+    login: (usernameOrEmail: string, password: string) =>
+      request<LoginResponse>('/api/v1/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ username: usernameOrEmail, email: usernameOrEmail, password }),
+      }),
+    me: () => request<AdminUser>('/api/v1/auth/me'),
+    logout: () => request<{ success: boolean }>('/api/v1/auth/logout', { method: 'POST', body: '{}' }),
   },
   // Contact
   contact: {

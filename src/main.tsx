@@ -15,6 +15,7 @@ import ReleasesPage from './admin/ReleasesPage.tsx'
 import AnalyticsPage from './admin/AnalyticsPage.tsx'
 import SettingsPage from './admin/SettingsPage.tsx'
 import MediaPage from './admin/MediaPage.tsx'
+import LoginPage from './admin/LoginPage.tsx'
 
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router";
@@ -23,6 +24,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App />} />
+      <Route path="/admin/login" element={<LoginPage />} />
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="projects" element={<ProjectsPage />} />

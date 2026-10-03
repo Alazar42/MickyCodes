@@ -21,7 +21,7 @@ export default function SkillsPage() {
 
   const openCreate = () => { setForm(emptyForm); crud.openCreate() }
   const openEdit = (s: Skill) => {
-    const { id, ...rest } = s
+    const { id: _id, ...rest } = s
     setForm(rest)
     crud.openEdit(s)
   }
@@ -49,27 +49,38 @@ export default function SkillsPage() {
     setForm((s) => ({ ...s, [k]: e.target.type === 'number' ? Number(e.target.value) : e.target.value }))
 
   const cols = [
-    { key: 'name', label: 'Name', render: (s: Skill) => (
-      <div style={{ fontWeight: 500, color: 'var(--admin-text)' }}>{s.icon && <span style={{ marginRight: 6 }}>{s.icon}</span>}{s.name}</div>
+    { key: 'name', label: 'Skill', render: (s: Skill) => (
+      <div className="font-semibold text-white flex items-center gap-2">
+        {s.icon && <span>{s.icon}</span>}
+        <span>{s.name}</span>
+      </div>
     )},
-    { key: 'category', label: 'Category' },
+    { key: 'category', label: 'Category', render: (s: Skill) => (
+      <span className="text-[0.7rem] font-mono text-neutral-300 bg-white/[0.04] border border-white/10 px-2.5 py-0.5 rounded-full">
+        {s.category || 'General'}
+      </span>
+    )},
     { key: 'proficiency', label: 'Proficiency', render: (s: Skill) => (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ flex: 1, background: 'var(--admin-border)', borderRadius: 4, height: 4, maxWidth: 80 }}>
-          <div style={{ width: `${s.proficiency}%`, background: 'var(--admin-accent)', height: '100%', borderRadius: 4 }} />
+      <div className="flex items-center gap-3">
+        <div className="w-24 bg-white/10 rounded-full h-1.5 overflow-hidden">
+          <div className="bg-white h-full rounded-full" style={{ width: `${s.proficiency}%` }} />
         </div>
-        <span style={{ fontSize: '0.75rem', color: 'var(--admin-muted)' }}>{s.proficiency}%</span>
+        <span className="text-xs font-mono text-neutral-400">{s.proficiency}%</span>
       </div>
     )},
     { key: 'featured', label: 'Featured', render: (s: Skill) => (
-      <span style={{ color: s.featured ? '#34d399' : 'var(--admin-muted)' }}>{s.featured ? '★' : '—'}</span>
+      <span className={`font-mono text-xs ${s.featured ? 'text-emerald-400' : 'text-neutral-600'}`}>
+        {s.featured ? '★ YES' : '—'}
+      </span>
     )},
-    { key: 'display_order', label: 'Order' },
+    { key: 'display_order', label: 'Order', render: (s: Skill) => (
+      <span className="font-mono text-xs text-neutral-400">#{s.display_order}</span>
+    )},
     { key: 'actions', label: '', width: '100px', render: (s: Skill) => (
       <ActionRow>
-        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(s)} />
+        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(s)} title="Edit" />
         <Btn size="sm" variant="danger" icon={<Trash2 size={13} />}
-          onClick={() => { if (confirm('Delete skill?')) crud.mutate(() => adminApi.skills.delete(s.id!), 'Deleted!') }} />
+          onClick={() => { if (confirm('Delete skill?')) crud.mutate(() => adminApi.skills.delete(s.id!), 'Deleted!') }} title="Delete" />
       </ActionRow>
     )},
   ]
@@ -77,7 +88,12 @@ export default function SkillsPage() {
   return (
     <div className="admin-page">
       {crud.toast && <Toast {...crud.toast} onDismiss={crud.dismissToast} />}
-      <PageHeader title="Skills" subtitle="Manage your technical skills" action={<Btn icon={<Plus size={14} />} onClick={openCreate}>New Skill</Btn>} />
+      <PageHeader
+        monoTag="TECHNICAL EXPERTISE / STACK"
+        title="Skills"
+        subtitle="Manage programming languages, frameworks, and proficiencies"
+        action={<Btn icon={<Plus size={14} />} onClick={openCreate}>New Skill</Btn>}
+      />
       <DataTable columns={cols} data={crud.data} loading={crud.loading} error={crud.error} emptyText="No skills yet." />
 
       <Modal open={crud.showModal} onClose={crud.closeModal} title={crud.editItem ? 'Edit Skill' : 'New Skill'} size="md">

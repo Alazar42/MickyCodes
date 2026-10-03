@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export interface CrudState<T> {
   data: T[]
@@ -24,6 +24,9 @@ export function useCrud<T>(
     showModal: false,
   })
 
+  const onMountRef = useRef(options?.onMount)
+  onMountRef.current = options?.onMount
+
   const load = useCallback(async () => {
     setState((s) => ({ ...s, loading: true, error: null }))
     try {
@@ -36,7 +39,7 @@ export function useCrud<T>(
 
   useEffect(() => {
     load()
-    options?.onMount?.()
+    onMountRef.current?.()
   }, [load])
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {

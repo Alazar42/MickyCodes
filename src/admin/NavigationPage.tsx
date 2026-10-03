@@ -13,7 +13,7 @@ export default function NavigationPage() {
   const [saving, setSaving] = useState(false)
 
   const openCreate = () => { setForm(emptyForm); crud.openCreate() }
-  const openEdit = (n: NavigationItem) => { const { id, ...rest } = n; setForm(rest); crud.openEdit(n) }
+  const openEdit = (n: NavigationItem) => { const { id: _id, ...rest } = n; setForm(rest); crud.openEdit(n) }
 
   const save = async () => {
     setSaving(true)
@@ -34,20 +34,33 @@ export default function NavigationPage() {
     setForm((s) => ({ ...s, [k]: e.target.type === 'number' ? Number(e.target.value) : e.target.value }))
 
   const cols = [
-    { key: 'label', label: 'Label', render: (n: NavigationItem) => <span style={{ fontWeight: 500, color: 'var(--admin-text)' }}>{n.label}</span> },
-    { key: 'url', label: 'URL', render: (n: NavigationItem) => <span style={{ fontFamily: 'var(--mono)', fontSize: '0.8rem', color: 'var(--admin-muted)' }}>{n.url}</span> },
-    { key: 'visibility', label: 'Visible', render: (n: NavigationItem) => (
-      <span style={{ color: n.visibility ? '#34d399' : 'var(--admin-muted)' }}>{n.visibility ? '✓' : '✗'}</span>
+    { key: 'label', label: 'Navigation Item', render: (n: NavigationItem) => (
+      <span className="font-semibold text-white text-sm">{n.label}</span>
     )},
-    { key: 'is_external', label: 'External', render: (n: NavigationItem) => (
-      <span style={{ color: n.is_external ? '#818cf8' : 'var(--admin-muted)' }}>{n.is_external ? '↗' : '—'}</span>
+    { key: 'url', label: 'Route / Link Target', render: (n: NavigationItem) => (
+      <span className="font-mono text-xs text-neutral-300 bg-white/[0.04] border border-white/10 px-2 py-0.5 rounded-md">
+        {n.url}
+      </span>
     )},
-    { key: 'display_order', label: 'Order' },
+    { key: 'visibility', label: 'Visibility', render: (n: NavigationItem) => (
+      <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[0.65rem] font-mono uppercase ${n.visibility ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-neutral-500/10 text-neutral-400 border border-neutral-500/20'}`}>
+        <span className={`h-1.5 w-1.5 rounded-full ${n.visibility ? 'bg-emerald-400' : 'bg-neutral-500'}`} />
+        {n.visibility ? 'Visible' : 'Hidden'}
+      </span>
+    )},
+    { key: 'is_external', label: 'Target', render: (n: NavigationItem) => (
+      <span className="text-xs font-mono text-neutral-400">
+        {n.is_external ? 'External ↗' : 'Internal Anchor'}
+      </span>
+    )},
+    { key: 'display_order', label: 'Order', render: (n: NavigationItem) => (
+      <span className="font-mono text-xs text-neutral-500">#{n.display_order}</span>
+    )},
     { key: 'actions', label: '', width: '100px', render: (n: NavigationItem) => (
       <ActionRow>
-        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(n)} />
+        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(n)} title="Edit" />
         <Btn size="sm" variant="danger" icon={<Trash2 size={13} />}
-          onClick={() => { if (confirm('Delete nav item?')) crud.mutate(() => adminApi.navigation.delete(n.id!), 'Deleted!') }} />
+          onClick={() => { if (confirm('Delete nav item?')) crud.mutate(() => adminApi.navigation.delete(n.id!), 'Deleted!') }} title="Delete" />
       </ActionRow>
     )},
   ]
@@ -55,7 +68,12 @@ export default function NavigationPage() {
   return (
     <div className="admin-page">
       {crud.toast && <Toast {...crud.toast} onDismiss={crud.dismissToast} />}
-      <PageHeader title="Navigation" subtitle="Manage site navigation items" action={<Btn icon={<Plus size={14} />} onClick={openCreate}>Add Item</Btn>} />
+      <PageHeader
+        monoTag="STRUCTURE / SITE MAP"
+        title="Navigation"
+        subtitle="Manage portfolio header menu links, anchor jumps, and visibility"
+        action={<Btn icon={<Plus size={14} />} onClick={openCreate}>Add Item</Btn>}
+      />
       <DataTable columns={cols} data={crud.data} loading={crud.loading} error={crud.error} emptyText="No navigation items yet." />
 
       <Modal open={crud.showModal} onClose={crud.closeModal} title={crud.editItem ? 'Edit Nav Item' : 'New Nav Item'} size="sm">

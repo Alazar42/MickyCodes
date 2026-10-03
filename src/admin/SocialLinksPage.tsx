@@ -13,7 +13,7 @@ export default function SocialLinksPage() {
   const [saving, setSaving] = useState(false)
 
   const openCreate = () => { setForm(emptyForm); crud.openCreate() }
-  const openEdit = (s: SocialLink) => { const { id, ...rest } = s; setForm(rest); crud.openEdit(s) }
+  const openEdit = (s: SocialLink) => { const { id: _id, ...rest } = s; setForm(rest); crud.openEdit(s) }
 
   const save = async () => {
     setSaving(true)
@@ -34,24 +34,34 @@ export default function SocialLinksPage() {
     setForm((s) => ({ ...s, [k]: e.target.type === 'number' ? Number(e.target.value) : e.target.value }))
 
   const cols = [
-    { key: 'platform', label: 'Platform', render: (s: SocialLink) => (
+    { key: 'platform', label: 'Platform & Label', render: (s: SocialLink) => (
       <div>
-        <div style={{ fontWeight: 500, color: 'var(--admin-text)' }}>{s.icon} {s.platform}</div>
-        <div style={{ fontSize: '0.72rem', color: 'var(--admin-muted)' }}>{s.label}</div>
+        <div className="font-semibold text-white text-sm flex items-center gap-1.5">
+          {s.icon && <span>{s.icon}</span>}
+          <span>{s.platform}</span>
+        </div>
+        <div className="text-[0.72rem] text-neutral-400 font-mono mt-0.5">{s.label || 'Link'}</div>
       </div>
     )},
-    { key: 'url', label: 'URL', render: (s: SocialLink) => (
-      <a href={s.url} target="_blank" rel="noreferrer" style={{ color: 'var(--admin-accent)', fontSize: '0.8rem' }}>{s.url}</a>
+    { key: 'url', label: 'Destination URL', render: (s: SocialLink) => (
+      <a href={s.url} target="_blank" rel="noreferrer" className="text-white hover:text-neutral-300 underline text-xs font-mono truncate max-w-xs block">
+        {s.url}
+      </a>
     )},
-    { key: 'is_active', label: 'Active', render: (s: SocialLink) => (
-      <span style={{ color: s.is_active ? '#34d399' : 'var(--admin-muted)' }}>{s.is_active ? '✓' : '✗'}</span>
+    { key: 'is_active', label: 'Status', render: (s: SocialLink) => (
+      <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[0.65rem] font-mono uppercase ${s.is_active ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-neutral-500/10 text-neutral-400 border border-neutral-500/20'}`}>
+        <span className={`h-1.5 w-1.5 rounded-full ${s.is_active ? 'bg-emerald-400' : 'bg-neutral-500'}`} />
+        {s.is_active ? 'Active' : 'Hidden'}
+      </span>
     )},
-    { key: 'display_order', label: 'Order' },
+    { key: 'display_order', label: 'Order', render: (s: SocialLink) => (
+      <span className="font-mono text-xs text-neutral-500">#{s.display_order}</span>
+    )},
     { key: 'actions', label: '', width: '100px', render: (s: SocialLink) => (
       <ActionRow>
-        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(s)} />
+        <Btn size="sm" variant="ghost" icon={<Edit2 size={13} />} onClick={() => openEdit(s)} title="Edit" />
         <Btn size="sm" variant="danger" icon={<Trash2 size={13} />}
-          onClick={() => { if (confirm('Delete?')) crud.mutate(() => adminApi.socialLinks.delete(s.id!), 'Deleted!') }} />
+          onClick={() => { if (confirm('Delete social link?')) crud.mutate(() => adminApi.socialLinks.delete(s.id!), 'Deleted!') }} title="Delete" />
       </ActionRow>
     )},
   ]
@@ -59,7 +69,12 @@ export default function SocialLinksPage() {
   return (
     <div className="admin-page">
       {crud.toast && <Toast {...crud.toast} onDismiss={crud.dismissToast} />}
-      <PageHeader title="Social Links" subtitle="Manage social media profiles" action={<Btn icon={<Plus size={14} />} onClick={openCreate}>Add Link</Btn>} />
+      <PageHeader
+        monoTag="SOCIAL CHANNELS & PROFILES"
+        title="Social Links"
+        subtitle="Manage public developer accounts, telegram, and contact channels"
+        action={<Btn icon={<Plus size={14} />} onClick={openCreate}>Add Link</Btn>}
+      />
       <DataTable columns={cols} data={crud.data} loading={crud.loading} error={crud.error} emptyText="No social links yet." />
 
       <Modal open={crud.showModal} onClose={crud.closeModal} title={crud.editItem ? 'Edit Social Link' : 'New Social Link'} size="md">

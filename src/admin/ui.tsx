@@ -1,22 +1,24 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import type { ReactNode } from 'react'
-import { X, Loader2, AlertCircle } from 'lucide-react'
+import { X, Loader2, AlertCircle, Search, Check } from 'lucide-react'
 
 // ─── Page Header ─────────────────────────────────────────────────────────────
 
 interface PageHeaderProps {
   title: string
   subtitle?: string
+  monoTag?: string
   action?: ReactNode
 }
-export function PageHeader({ title, subtitle, action }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, monoTag = 'PORTFOLIO CONTENT & CMS', action }: PageHeaderProps) {
   return (
     <div className="admin-page-header">
       <div>
+        <div className="mono-label mb-2 text-neutral-400/80">{monoTag}</div>
         <h1 className="admin-page-title">{title}</h1>
         {subtitle && <p className="admin-page-subtitle">{subtitle}</p>}
       </div>
-      {action && <div>{action}</div>}
+      {action && <div className="flex items-center gap-3">{action}</div>}
     </div>
   )
 }
@@ -31,8 +33,11 @@ interface StatCardProps {
 }
 export function StatCard({ label, value, icon, color = 'white' }: StatCardProps) {
   return (
-    <div className="stat-card">
-      <div className="stat-icon" style={{ color }}>{icon}</div>
+    <div className="stat-card group">
+      <div className="flex items-center justify-between">
+        <div className="stat-icon transition-transform duration-200 group-hover:scale-110" style={{ color }}>{icon}</div>
+        <span className="h-1.5 w-1.5 rounded-full bg-white/20 group-hover:bg-white/60 transition-colors" />
+      </div>
       <div className="stat-value">{value}</div>
       <div className="stat-label">{label}</div>
     </div>
@@ -55,6 +60,7 @@ interface DataTableProps<T> {
   loading?: boolean
   error?: string | null
   emptyText?: string
+  searchPlaceholder?: string
 }
 
 export function DataTable<T extends Record<string, any>>({
@@ -64,51 +70,106 @@ export function DataTable<T extends Record<string, any>>({
   loading,
   error,
   emptyText = 'No data found.',
+  searchPlaceholder = 'Filter records...',
 }: DataTableProps<T>) {
+  const [search, setSearch] = useState('')
+
+  const filtered = useMemo(() => {
+    if (!search.trim()) return data
+    const q = search.toLowerCase()
+    return data.filter((row) =>
+      Object.values(row).some((val) => {
+        if (typeof val === 'string') return val.toLowerCase().includes(q)
+        if (typeof val === 'number') return String(val).includes(q)
+        return false
+      })
+    )
+  }, [data, search])
+
   if (loading) {
     return (
-      <div className="table-state">
-        <Loader2 size={24} className="spin" />
-        <span>Loading...</span>
+      <div className="table-state border border-white/[0.08] rounded-2xl bg-white/[0.02]">
+        <Loader2 size={22} className="spin text-white" />
+        <span className="text-neutral-400">Loading data from OpenAPI backend...</span>
       </div>
     )
   }
   if (error) {
     return (
-      <div className="table-state error">
-        <AlertCircle size={24} />
+      <div className="table-state error border border-rose-500/20 rounded-2xl bg-rose-500/5">
+        <AlertCircle size={22} />
         <span>{error}</span>
       </div>
     )
   }
   if (!data.length) {
-    return <div className="table-state muted">{emptyText}</div>
+    return (
+      <div className="table-state muted border border-white/[0.08] rounded-2xl bg-white/[0.02] flex-col gap-3 py-16">
+        <span className="text-neutral-400 text-sm">{emptyText}</span>
+      </div>
+    )
   }
 
   return (
-    <div className="table-wrapper">
-      <table className="admin-table">
-        <thead>
-          <tr>
-            {columns.map((col) => (
-              <th key={col.key} style={{ width: col.width }}>
-                {col.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row, i) => (
-            <tr key={String(row[keyField] ?? i)}>
+    <div className="space-y-3">
+      {data.length > 2 && (
+        <div className="flex items-center justify-between gap-4 px-1">
+          <div className="relative flex-1 max-w-xs">
+            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={searchPlaceholder}
+              className="w-full rounded-full border border-white/[0.08] bg-white/[0.03] pl-9 pr-8 py-1.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-white/30 transition-all font-mono"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white"
+              >
+                <X size={12} />
+              </button>
+            )}
+          </div>
+          <div className="text-[0.68rem] font-mono text-neutral-500 uppercase tracking-widest">
+            Showing {filtered.length} of {data.length}
+          </div>
+        </div>
+      )}
+
+      <div className="table-wrapper">
+        <table className="admin-table">
+          <thead>
+            <tr>
               {columns.map((col) => (
-                <td key={col.key}>
-                  {col.render ? col.render(row) : String(row[col.key] ?? '—')}
-                </td>
+                <th key={col.key} style={{ width: col.width }}>
+                  {col.label}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="text-center py-10 text-neutral-500 font-mono text-xs">
+                  No records matching &quot;{search}&quot;
+                </td>
+              </tr>
+            ) : (
+              filtered.map((row, i) => (
+                <tr key={String(row[keyField] ?? i)}>
+                  {columns.map((col) => (
+                    <td key={col.key}>
+                      {col.render ? col.render(row) : String(row[col.key] ?? '—')}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
@@ -142,9 +203,12 @@ export function Modal({ open, onClose, title, children, size = 'md' }: ModalProp
     >
       <div className={`modal modal-${size}`}>
         <div className="modal-header">
-          <h3 className="modal-title">{title}</h3>
-          <button className="modal-close" onClick={onClose}>
-            <X size={16} />
+          <div>
+            <div className="mono-label text-[0.62rem] text-neutral-400 mb-1">RECORD EDITOR</div>
+            <h3 className="modal-title">{title}</h3>
+          </div>
+          <button className="modal-close" onClick={onClose} title="Close (Esc)">
+            <X size={15} />
           </button>
         </div>
         <div className="modal-body">{children}</div>
@@ -250,9 +314,9 @@ export function Toast({ message, type = 'success', onDismiss }: ToastProps) {
 
   return (
     <div className={`admin-toast toast-${type}`}>
-      {type === 'error' ? <AlertCircle size={14} /> : '✓'}
-      {message}
-      <button onClick={onDismiss}><X size={12} /></button>
+      {type === 'error' ? <AlertCircle size={15} /> : <Check size={15} />}
+      <span>{message}</span>
+      <button onClick={onDismiss}><X size={13} /></button>
     </div>
   )
 }
@@ -281,3 +345,4 @@ export function Toggle({ checked, onChange, label }: ToggleProps) {
     </label>
   )
 }
+
