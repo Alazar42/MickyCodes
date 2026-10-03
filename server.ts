@@ -41,7 +41,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // ─── Production Credentials ──────────────────────────────────────────────────
 const ADMIN_EMAIL = 'alazartesfaye42@gmail.com'
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '@Mickyastesfaye0965161472'
+let currentAdminPassword = process.env.ADMIN_PASSWORD || '@Mickyastesfaye0965161472'
 
 // Active server sessions: token -> { user, createdAt, expiresAt }
 const activeSessions = new Map<string, { user: any; createdAt: number; expiresAt: number }>()
@@ -49,7 +49,7 @@ const activeSessions = new Map<string, { user: any; createdAt: number; expiresAt
 // Helper to hash password with salt or compare directly
 function verifyPassword(inputPass: string): boolean {
   const cleanInput = (inputPass || '').trim()
-  const expected = ADMIN_PASSWORD.trim()
+  const expected = currentAdminPassword.trim()
 
   // Exact match with production admin password
   if (cleanInput === expected) return true
@@ -350,6 +350,30 @@ app.post('/api/v1/auth/logout', (req: Request, res: Response) => {
     activeSessions.delete(token)
   }
   res.status(200).json({ ok: true, success: true, message: 'Logged out successfully' })
+})
+
+// POST /api/v1/auth/change-password - Update admin credentials
+app.post('/api/v1/auth/change-password', (req: Request, res: Response) => {
+  const { currentPassword, oldPassword, newPassword } = req.body || {}
+  const oldPass = (currentPassword || oldPassword || '').trim()
+  const newPass = (newPassword || '').trim()
+
+  if (!newPass || newPass.length < 6) {
+    return res.status(400).json({ error: 'New password must be at least 6 characters long.' })
+  }
+
+  // Verify authorization either via valid bearer token OR correct current password
+  const authHeader = req.headers.authorization
+  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7).trim() : ''
+  const hasValidSession = token ? activeSessions.has(token) : false
+
+  if (!hasValidSession && !verifyPassword(oldPass)) {
+    return res.status(401).json({ error: 'Current password is incorrect or session expired.' })
+  }
+
+  currentAdminPassword = newPass
+  logActivity('Admin', 'PASSWORD_CHANGED', 'Auth', 'usr-micky-01', 'Admin password successfully updated')
+  return res.status(200).json({ ok: true, success: true, message: 'Password updated successfully.' })
 })
 
 // ─── PUBLIC PORTFOLIO / TELEGRAM API ─────────────────────────────────────────

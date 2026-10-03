@@ -316,6 +316,15 @@
   "media": [],
   "activity": [
     {
+      "id": "act_1790996181138_kkdpt",
+      "admin_user": "Admin",
+      "action": "PASSWORD_CHANGED",
+      "target_type": "Auth",
+      "target_id": "usr-micky-01",
+      "details": "Admin password successfully updated",
+      "timestamp": "2026-10-03T02:56:21.138Z"
+    },
+    {
       "id": "act_1790995689031_jhmsa",
       "admin_user": "Admin",
       "action": "LOGIN_SUCCESS",

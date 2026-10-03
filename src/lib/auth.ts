@@ -50,6 +50,10 @@ export const auth = {
     return res
   },
 
+  async changePassword(currentPasswordOrObj: any, newPassword?: string) {
+    return api.auth.changePassword(currentPasswordOrObj, newPassword)
+  },
+
   async logout(): Promise<void> {
     try {
       await api.auth.logout()

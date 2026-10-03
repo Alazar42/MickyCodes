@@ -298,6 +298,16 @@ export const api = {
       }),
     me: () => request<AdminUser>('/api/v1/auth/me'),
     logout: () => request<{ success: boolean }>('/api/v1/auth/logout', { method: 'POST', body: '{}' }),
+    changePassword: (currentPasswordOrObj: any, newPassword?: string) => {
+      const body =
+        typeof currentPasswordOrObj === 'object' && currentPasswordOrObj !== null
+          ? currentPasswordOrObj
+          : { currentPassword: currentPasswordOrObj, oldPassword: currentPasswordOrObj, newPassword }
+      return request<{ success: boolean; message: string }>('/api/v1/auth/change-password', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      })
+    },
   },
   // Contact
   contact: {
@@ -472,5 +482,18 @@ export const adminApi = {
   // Activity
   activity: {
     list: () => request('/api/v1/admin/activity'),
+  },
+  // Auth
+  auth: {
+    changePassword: (currentPasswordOrObj: any, newPassword?: string) => {
+      const body =
+        typeof currentPasswordOrObj === 'object' && currentPasswordOrObj !== null
+          ? currentPasswordOrObj
+          : { currentPassword: currentPasswordOrObj, oldPassword: currentPasswordOrObj, newPassword }
+      return request<{ success: boolean; message: string }>('/api/v1/auth/change-password', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      })
+    },
   },
 }

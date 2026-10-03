@@ -540,8 +540,6 @@ class CmsBackendStore {
       const expectedWithoutAt = PROD_PASS.startsWith('@') ? PROD_PASS.substring(1) : PROD_PASS
 
       const isPassValid =
-        cleanPass === 'admin123' ||
-        cleanPass === 'admin' ||
         cleanPass === PROD_PASS ||
         cleanPass.toLowerCase() === PROD_PASS.toLowerCase() ||
         cleanWithoutAt === expectedWithoutAt ||
@@ -574,7 +572,7 @@ class CmsBackendStore {
       return Promise.resolve({ ok: true, success: true, message: 'Logged out successfully' } as unknown as T)
     }
     if (cleanPath === '/api/v1/auth/change-password') {
-      const newPwd = (body?.new_password || '').trim()
+      const newPwd = (body?.newPassword || body?.new_password || '').trim()
       if (!newPwd || newPwd.length < 4) {
         return Promise.reject(new Error('Password must be at least 4 characters long'))
       }
